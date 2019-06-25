@@ -1,0 +1,8 @@
+/node_modules
+/tscompiled
+/config
+/.vscode
+auth.json
+links.json
+tags.json
+*.log

@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "resolveJsonModule": true,
+        "outDir": "tscompiled/",
+        "experimentalDecorators": true
+    },
+    "include": [
+        "ts_src/**/**/*"
+    ]
+}
