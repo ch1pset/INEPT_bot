@@ -33,7 +33,7 @@ export function LogResult(format?: string) {
     }
 }
 
-export function TryCatch(options?: { log?: boolean, stack?: boolean, callback?: Function }) {
+export function TryCatch(options?: { nolog?: boolean, callback?: Function }) {
     return function(target: Object, key: PropertyKey, descriptor: PropertyDescriptor) {
         const origin = descriptor.value;
 
@@ -42,13 +42,11 @@ export function TryCatch(options?: { log?: boolean, stack?: boolean, callback?: 
             try {
                 ret = origin.apply(this, args);
             } catch(e) {
-                if(options.log) {
+                if(!options.nolog) {
                     console.error(`Error detected in ${String(key)} from ${target}`);
                     console.error(`Triggered by ${origin}`);
-                }
-
-                if(options.stack || options.log)
                     console.error(e);
+                }
 
                 if(options.callback) {
                     options.callback(e, args);
@@ -70,4 +68,24 @@ export function Promisify(target: Object, key: PropertyKey, descriptor: Property
         });
     }
     return descriptor;
+}
+
+const _PROVIDERS = {};
+
+function getProvider(name: string) {
+    return _PROVIDERS[name];
+}
+
+export function Provider(ctor: {new (...args: any[])}) {
+    _PROVIDERS[ctor.name] = new ctor();
+    console.log(`Registered Provider: `, getProvider(ctor.name));
+}
+
+export function Inject(providers: Function[]) {
+    return function(ctor: {new(...args: any[])}) {
+        providers.forEach(provider => {
+            ctor.prototype[provider.name] = getProvider(ctor.name);
+        });
+        return ctor;
+    }
 }

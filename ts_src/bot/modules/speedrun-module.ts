@@ -2,28 +2,31 @@ import { BotModule } from "./module";
 import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
 import { IBotResponse, Response } from "../response";
+import { Inject } from "../../utils/decorators";
+import { SpeedrunComService } from "../../speedrun/api";
 
+@Inject([SpeedrunComService])
 export class SpeedrunModule extends BotModule
 {
     private RESPONSE: IBotResponse = {
         TYPE: Response.REPLY,
         MSG: ''
     }
-
+    private SpeedrunComService: SpeedrunComService;
     constructor() {
         super();
     }
 
     public async getRecord(abrv: string, cat: string, vars: string[][], lvl: string) {
-        const leaderboard = await api.getLeader(abrv, cat, vars, lvl);
+        const leaderboard = await this.SpeedrunComService.getLeader(abrv, cat, vars, lvl);
         return leaderboard.runs.find((r: any) => r.place === 1).run;
     }
     public async getTop(num: number, abrv: string, cat: string, vars: string[][], lvl: string) {
-        let leaderboard = await api.getLeader(abrv, cat, vars, lvl);
+        let leaderboard = await this.SpeedrunComService.getLeader(abrv, cat, vars, lvl);
         return leaderboard.runs.slice(0, num);
     }
     public async getPlace(num: number, abrv: string, cat: string, vars: string[][], lvl: string) {
-        let leaderboard = await api.getLeader(abrv, cat, vars, lvl);
+        let leaderboard = await this.SpeedrunComService.getLeader(abrv, cat, vars, lvl);
         return leaderboard.runs.find((r: any) => r.place === num).run;
     }
 
@@ -52,7 +55,7 @@ export class SpeedrunModule extends BotModule
             let variables = args.text.slice(1).map(a => a.split('='));
             let i = variables.findIndex(v => v[0]==='level');
             let level = (i !== -1)? variables.splice(i, 1)[0][1] : null;
-            let leaderboard = await api.srcapi.getLeader(game, category, variables, level);
+            let leaderboard = await this.getTop(top, game, category, variables, level);
             let runs = leaderboard.runs.slice(0, top);
             response.MSG = runs.map((r: any) => r.run.weblink).join('\n');
             response.TYPE = Response.DM;
