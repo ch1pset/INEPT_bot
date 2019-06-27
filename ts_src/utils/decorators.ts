@@ -15,7 +15,7 @@ export function Log(format: string): Decorator<fn> {
     }
 }
 
-export function TryCatch(options?: { nolog?: bool, callback?: fn }): Decorator<any> {
+export function TryCatch(options?: { nolog?: bool, callback?: (e?: Error) => void }): Decorator<any> {
     return function(target, key, method) {
         const origin = method.value;
         method.value = function(...args: any[]) {
@@ -30,7 +30,7 @@ export function TryCatch(options?: { nolog?: bool, callback?: fn }): Decorator<a
                 }
 
                 if(options.callback) {
-                    options.callback(e, args);
+                    options.callback(e);
                 }
                 ret = null;
             }
@@ -40,7 +40,7 @@ export function TryCatch(options?: { nolog?: bool, callback?: fn }): Decorator<a
     }
 }
 
-export const Promisify: Decorator<fn> = (target, key, method) => {
+export const Promisify: Decorator<any> = (target, key, method) => {
     const origin = method.value;
     method.value = function(...args: any[]) {
         return new Promise((res, rej) => {
