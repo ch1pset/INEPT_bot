@@ -2,31 +2,32 @@ import { BotModule } from "./module";
 import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
 import { IBotResponse, Response } from "../response";
-import { Inject } from "../../utils/decorators";
 import { SpeedrunComService } from "../../speedrun/api";
+import { Inject } from "../../utils/injector";
 
-@Inject([SpeedrunComService])
 export class SpeedrunModule extends BotModule
 {
+    @Inject(SpeedrunComService) 
+    private srcapi: SpeedrunComService;
+
     private RESPONSE: IBotResponse = {
         TYPE: Response.REPLY,
         MSG: ''
     }
-    private SpeedrunComService: SpeedrunComService;
     constructor() {
         super();
     }
 
     public async getRecord(abrv: string, cat: string, vars: string[][], lvl: string) {
-        const leaderboard = await this.SpeedrunComService.getLeader(abrv, cat, vars, lvl);
+        const leaderboard = await this.srcapi.getLeader(abrv, cat, vars, lvl);
         return leaderboard.runs.find((r: any) => r.place === 1).run;
     }
     public async getTop(num: number, abrv: string, cat: string, vars: string[][], lvl: string) {
-        let leaderboard = await this.SpeedrunComService.getLeader(abrv, cat, vars, lvl);
+        let leaderboard = await this.srcapi.getLeader(abrv, cat, vars, lvl);
         return leaderboard.runs.slice(0, num);
     }
     public async getPlace(num: number, abrv: string, cat: string, vars: string[][], lvl: string) {
-        let leaderboard = await this.SpeedrunComService.getLeader(abrv, cat, vars, lvl);
+        let leaderboard = await this.srcapi.getLeader(abrv, cat, vars, lvl);
         return leaderboard.runs.find((r: any) => r.place === num).run;
     }
 
