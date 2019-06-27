@@ -6,12 +6,9 @@ import { WSStream } from '../utils/sstream';
 import { Promisify, TryCatch } from '../utils/decorators';
 
 export class SpeedrunComService {
-    private static _instance = new SpeedrunComService();
+    private static readonly _self = new SpeedrunComService();
     private constructor() { }
-    
-    public get self() {
-        return SpeedrunComService._instance;
-    }
+    static get self() { return SpeedrunComService._self; }
 
     @Promisify
     private GET(request: string | IRequest | URL, callback?: (err: Error, data: WSStream) => void): WSStream
@@ -56,4 +53,3 @@ export class SpeedrunComService {
         return null;
     }
 }
-
