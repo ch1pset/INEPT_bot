@@ -4,6 +4,7 @@ import { createRequest } from './util';
 import { Game } from './resources';
 import { WSStream } from '../utils/sstream';
 import { Promisify, TryCatch } from '../utils/decorators';
+import { NodeCallback } from '../utils/typedefs';
 
 export class SpeedrunComService {
     private static readonly _self = new SpeedrunComService();
@@ -11,7 +12,7 @@ export class SpeedrunComService {
     static get self() { return SpeedrunComService._self; }
 
     @Promisify
-    private GET(request: string | IRequest | URL, callback?: (err: Error, data: WSStream) => void): WSStream
+    private GET(request: string | IRequest | URL, callback?: NodeCallback): WSStream
     {
         const wstream = new WSStream();
         https.get(request, response => response.pipe(wstream));
@@ -24,7 +25,7 @@ export class SpeedrunComService {
     {
         const srcReq = createRequest(`/games?abbreviation=${abrv}&embed=${embeds.join(',')}`);
         const games = await this.GET(srcReq)
-            .then(sstream => JSON.parse(sstream.data).data)
+            .then((sstream: WSStream) => JSON.parse(sstream.data).data)
             .catch(() => null);
         if(games)
             return new Game(games[0]);

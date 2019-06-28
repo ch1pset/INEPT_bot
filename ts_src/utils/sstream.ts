@@ -1,7 +1,9 @@
 import { NodeStringDecoder, StringDecoder } from "string_decoder";
-import { Writable } from "stream";
+import { Writable, Readable } from "stream";
+import { fn, Decorator } from "./typedefs";
 
 export class WSStream extends Writable {
+    [x: string]: any;
     private _decoder: NodeStringDecoder
     private _data: string;
     constructor(options?: { [opt: string]: any }) {
@@ -22,5 +24,21 @@ export class WSStream extends Writable {
     _final(callback: Function) {
         this._data += this._decoder.end();
         callback();
+    }
+}
+
+export class RSStream extends Readable {
+    constructor(options?: { [opt: string]: any }) {
+        super(options);
+        
+    }
+    _read(size: number) {
+        
+    }
+}
+
+export function Streamable(options?: { [opt: string]: any }): Decorator<Constructor> {
+    return function(target, key) {
+
     }
 }

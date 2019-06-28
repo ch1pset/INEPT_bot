@@ -1,4 +1,4 @@
-import { Decorator, fn, bool } from "./types";
+import { Decorator, fn, bool } from "./typedefs";
 
 /**
  * Logs specified formatted message to console, injecting the result of

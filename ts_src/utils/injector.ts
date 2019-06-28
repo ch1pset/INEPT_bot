@@ -1,4 +1,4 @@
-import { fn, Constructor, Singleton, Decorator } from "./types";
+import { fn, Constructor, Singleton, Decorator } from "./typedefs";
 
 // export class Injector {
 //     private _providers: Service[] = [];
