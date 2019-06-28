@@ -7,15 +7,14 @@ import { Subscriber } from '../../utils/subscriber';
 const PERMISSION = Permissions.FLAGS;
 
 
-export class BotModule implements Subscriber
+export abstract class BotModule extends Subscriber
 {
-    public NAME: string;
     private ROLES: string[];
     private PERMISSIONS: number;
 
-    constructor(name?: string, roles?: string[], permissions?: number)
+    constructor(roles?: string[], permissions?: number)
     {
-        this.NAME = name;
+        super();
         this.ROLES = roles;
         this.PERMISSIONS = permissions;
     }
