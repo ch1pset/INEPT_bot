@@ -15,7 +15,6 @@ export class Variable implements IVariable {
         this.values = v ? mapValueArray(v.values.values) : null;
     }
 
-    @TryCatch()
     getValue(label: string) {
         return this.values.find(v => v.label === label);
     }
@@ -36,7 +35,6 @@ export class Category implements ICategory {
         this.variables = c ? c.variables.data.map((v: any) => new Variable(v)) : null;
     }
 
-    @TryCatch()
     getVariableIDs(name: string, value: string) {
         let ret = this.variables.find(v => v.name === name);
         return ret ? [ret.id, ret.getValue(value).id] : null;
@@ -60,7 +58,6 @@ export class Level implements ILevel {
         this.variables = l.variables ? l.variables.data.map((v: any) => new Variable(v)) : null;
     }
 
-    @TryCatch()
     getVariableIDs(name: string, value: string)
     {
         let ret = this.variables.find(v => v.name === name);
@@ -87,19 +84,20 @@ export class Game implements IGame {
         this.levels = g.levels ? g.levels.data.map(l => new Level(l)) : null;
     }
 
-    @TryCatch()
     getVariableIDs(name: string, value: string) {
         let ret = this.variables.find(v => v.name === name);
         return ret ? [ret.id, ret.getValue(value).id] : null;
     }
 
-    @TryCatch()
     getCategory(name: string) {
         return this.categories.find(c => c.name === name);
     }
 
-    @TryCatch()
     getLevel(name: string) {
         return this.levels.find(l => l.name === name);
     }
+}
+
+export class Leaderboard {
+    
 }
