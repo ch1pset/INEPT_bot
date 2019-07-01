@@ -7,7 +7,7 @@ import * as Services from '../services/index';
 
 export class PingModule extends BotModule
 {
-    constructor(private msgService: Services.RespondService) {
+    constructor(private msgService: Services.Responder) {
         super();
     }
 

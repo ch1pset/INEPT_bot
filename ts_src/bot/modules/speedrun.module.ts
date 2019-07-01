@@ -7,8 +7,8 @@ import * as Services from '../services/index';
 export class SpeedrunModule extends BotModule
 {
     constructor(
-        private msgService: Services.RespondService,
-        private speedrunService: Services.SpeedrunService
+        private msgService: Services.Responder,
+        private speedrunService: Services.SpeedrunCom
     ) {
         super();
     }
