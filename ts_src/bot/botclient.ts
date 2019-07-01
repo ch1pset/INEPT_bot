@@ -2,9 +2,9 @@ import { Client, Message } from 'discord.js';
 import * as Args from '../user/arguments';
 import { Subscribable } from '../utils/subscriber';
 import { Callback, str } from '../utils/typedefs';
-import { Mixins } from '../utils/decorators';
+import { Mixin } from '../utils/decorators';
 
-@Mixins([Subscribable])
+@Mixin([Subscribable])
 export class BotClient extends Client implements Subscribable
 {
     _subscriptions: Map<str, Callback<any>[]>;

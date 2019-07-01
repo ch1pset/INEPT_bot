@@ -7,7 +7,7 @@ export function Log(format: string): Decorator<any> {
     return function(target, key, method) {
         const origin = method.value;
         method.value = function(...args: any[]) {
-            const result = JSON.stringify(origin.apply(target, args), null, 2);
+            const result = JSON.stringify(origin.apply(target, ...args), null, 2);
             console.log(format ? format.replace(/%\([ndsf]\)|\$\([\w]+\)/ig, result) : result);
         };
         return method;
@@ -20,7 +20,7 @@ export function TryCatch(options?: { nolog?: bool, callback?: (e?: Error) => voi
         method.value = function(...args: any[]) {
             let ret;
             try {
-                ret = origin.apply(target, args);
+                ret = origin.apply(target, ...args);
             } catch(e) {
                 if(!options || !options.nolog) {
                     console.error(`Error detected in ${String(key)} from ${target}`);
@@ -39,13 +39,29 @@ export function TryCatch(options?: { nolog?: bool, callback?: (e?: Error) => voi
     }
 }
 
-export function Mixins(mixins: fn[]): fn {
+export function Mixin(mixins?: fn[]): fn {
     return function(ctor: fn) {
-        mixins.forEach(mixin => {
-            const proto = Object.getOwnPropertyDescriptors(mixin.prototype);
-            for(let name in proto) {
-                Object.defineProperty(ctor.prototype, name, proto[name]);
+        if(mixins) {
+            mixins.forEach(mixin => {
+                const proto = Object.getOwnPropertyDescriptors(mixin.prototype);
+                for(let name in proto) {
+                    Object.defineProperty(ctor.prototype, name, proto[name]);
+                }
+            });
+        }
+    }
+}
+
+export function Singleton(){
+    return function<T extends {new(...args:any[]):{}}>(ctor: T) {
+        return class extends ctor {
+            private static _self = new ctor();
+            private constructor(...args: any[]) {
+                super(...args);
             }
-        });
+            static get self() {
+                return this._self;
+            }
+        }
     }
 }

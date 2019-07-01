@@ -1,14 +1,16 @@
 import { Message } from "discord.js";
+import { Singleton } from "../../utils/decorators";
 
-
-export class RespondService {
-    reply(message: Message, response: string) {
+@Singleton()
+export class Responder {
+    static self: Responder
+    reply(message: Message | any, response: string) {
         message.reply(response);
     }
-    send(message: Message, response: string) {
+    send(message: Message | any, response: string) {
         message.channel.send(response);
     }
-    directMessage(message: Message, response: string, user?: string) {
+    directMessage(message: Message | any, response: string, user?: string) {
         if(!user)
             message.author.send(response);
         else {

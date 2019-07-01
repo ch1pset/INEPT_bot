@@ -4,9 +4,12 @@ import { createRequest } from './util';
 import { Game, Leaderboard } from './resources';
 import { WSStream } from '../utils/sstream';
 import { NodeCallback, str } from '../utils/typedefs';
+import { Singleton } from '../utils/decorators';
 
-export class SpeedrunService {
-    private GET(request: string | IRequest | URL, callback?: NodeCallback<Error, any>): WSStream
+@Singleton()
+export class SpeedrunCom {
+    static self: SpeedrunCom;
+    private GET(request: str | IRequest | URL, callback?: NodeCallback<Error, any>): WSStream
     {
         const wstream = new WSStream();
         https.get(request, response => {
@@ -28,7 +31,7 @@ export class SpeedrunService {
         return wstream;
     }
 
-    private getGame(abrv: string, embeds: string[], cb?: NodeCallback<Error, Game>)
+    private getGame(abrv: str, embeds: str[], cb?: NodeCallback<Error, Game>)
     {
         const srcReq = createRequest(`/games?abbreviation=${abrv}&embed=${embeds.join(',')}`);
         const wstream = this.GET(srcReq, (err, games) => {
@@ -41,7 +44,7 @@ export class SpeedrunService {
         return wstream;
     }
 
-    public getLeader(abrv: string, cat: string, vars: string[][], lvl: string, cb?: NodeCallback<Error, any>)
+    public getLeader(abrv: str, cat: str, vars: str[][], lvl: str, cb?: NodeCallback<Error, any>)
     {
         return this.getGame(abrv, ['levels.variables', 'categories.variables'], (err, game) => {
             if(!err) {

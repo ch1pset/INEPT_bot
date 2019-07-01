@@ -1,15 +1,14 @@
 import { BotModule } from "./base.module";
 import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
-import { SpeedrunService } from "../../speedrun/speedrun.service";
-import { RespondService } from "../services/respond.service";
 import { NodeCallback } from "../../utils/typedefs";
+import * as Services from '../services/index';
 
 export class SpeedrunModule extends BotModule
 {
     constructor(
-        private msgService: RespondService,
-        private speedrunService: SpeedrunService
+        private msgService: Services.RespondService,
+        private speedrunService: Services.SpeedrunService
     ) {
         super();
     }

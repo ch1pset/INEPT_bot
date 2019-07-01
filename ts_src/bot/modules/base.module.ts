@@ -19,7 +19,7 @@ export class BotModule extends Subscriber
         this.PERMISSIONS = permissions;
     }
 
-    public checkPermissions(user: UserData): boolean
+    protected checkPermissions(user: UserData): boolean
     {
         return this.ROLES.some(r => user.hasRole(r)) || user.hasPermission(this.PERMISSIONS);
     }

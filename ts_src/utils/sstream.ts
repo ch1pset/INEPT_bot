@@ -36,7 +36,7 @@ export class RSStream extends Readable {
     }
 }
 
-// export function Streamable(options?: { [opt: string]: any }): Decorator<Constructor> {
+// export function Streamable(rw: str): Decorator<Constructor> {
 //     return function(target, key) {
 
 //     }
