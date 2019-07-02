@@ -1,6 +1,6 @@
 import { TryCatch } from "../../utils/decorators";
 import { IGame, ILevel, ICategory, IVariable, IValue } from "./interfaces";
-import { mapValueArray } from "./util";
+
 
 export class Variable implements IVariable {
     id: string;
@@ -12,7 +12,19 @@ export class Variable implements IVariable {
         this.id = v ? v.id : null;
         this.name = v ? v.name: null;
         this.scope = v ? v.scope.type : null;
-        this.values = v ? mapValueArray(v.values.values) : null;
+        this.values = v ? this.mapValueArray(v.values.values) : null;
+    }
+
+    private mapValueArray(values: any): IValue[] {
+        const ret: IValue[] = [];
+        for(let id in values) {
+            ret.push({
+                id: id,
+                label: values[id].label,
+                rules: values[id].rules
+            });
+        }
+        return ret;
     }
 
     getValue(label: string) {

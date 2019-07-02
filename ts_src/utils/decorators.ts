@@ -52,17 +52,17 @@ export function Mixin(mixins?: fn[]): fn {
     }
 }
 
-export function Singleton(){
+export function Singleton(...args: any[]) {
     return function<T extends {new(...args:any[]):{}}>(ctor: T) {
         return class Singleton extends ctor {
-            private static _self: Singleton;
+            private static _self: ThisType<T>;
             private constructor(...args: any[]) {
                 super(...args);
                 throw Error(`'new ${ctor.name}()' Cannot instantiate Singletons! You can only call singleton instances with the '.self' static property!`);
             }
             static get self() {
                 if(!Singleton._self) {
-                    Singleton._self = new ctor()
+                    Singleton._self = new ctor(...args);
                     console.log('Singleton created: ' + ctor.name)
                 }
                 return Singleton._self;
@@ -70,3 +70,21 @@ export function Singleton(){
         }
     }
 }
+
+// export function Factory() {
+//     return function<T extends {new(...args: any[]):{}}>(ctor: T) {
+//         return class extends ctor {
+//             private constructor(...args: any[]) {
+//                 super(...args);
+//             }
+//             static create(...args: any[]) {
+//                 return new ctor(...args);
+//             }
+//             static copy(other: T) {
+//                 const copy_T = {};
+//                 Object.assign(copy_T, other);
+//                 return copy_T;
+//             }
+//         }
+//     }
+// }

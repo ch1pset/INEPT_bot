@@ -1,6 +1,6 @@
 import * as https from 'https';
 import { IRequest } from './speedrun/interfaces';
-import { createRequest } from './speedrun/util';
+import { Request } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
 import { WSStream } from '../utils/sstream';
 import { NodeCallback, str } from '../utils/typedefs';
@@ -33,7 +33,7 @@ export class SpeedrunCom {
 
     private getGame(abrv: str, embeds: str[], cb?: NodeCallback<Error, Game>)
     {
-        const srcReq = createRequest(`/games?abbreviation=${abrv}&embed=${embeds.join(',')}`);
+        const srcReq = Request.create(`/games?abbreviation=${abrv}&embed=${embeds.join(',')}`);
         const wstream = this.GET(srcReq, (err, games) => {
             if(!err) {
                 cb(null, new Game(games[0]))
@@ -58,7 +58,7 @@ export class SpeedrunCom {
                         query += `var-${catvars[0]}=${catvars[1]}&`;
                     }
                 });
-                const request = createRequest(`/leaderboards/${game.id}${level? `/level/${level.id}/` : `/category/`}${category.id}?${query}`);
+                const request = Request.create(`/leaderboards/${game.id}${level? `/level/${level.id}/` : `/category/`}${category.id}?${query}`);
                 this.GET(request, (err, leader) => leader ? cb(null, leader) : cb(err, null));
             }
             else cb(err, null);
