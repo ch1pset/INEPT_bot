@@ -10,7 +10,6 @@ const speedrun = new SpeedrunModule(
     Service.Responder.self,
     Service.SpeedrunCom.self
     );
-const respond = new Service.Responder();
 
 ping.subscribe(bot, 'ping')
     .subscribe(bot, 'pingme')
