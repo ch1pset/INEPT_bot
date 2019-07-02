@@ -2,7 +2,7 @@ import { BotModule } from "./base.module";
 import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
 import { NodeCallback } from "../../utils/typedefs";
-import * as Services from '../services/index';
+import * as Services from '../../services/index';
 
 export class SpeedrunModule extends BotModule
 {

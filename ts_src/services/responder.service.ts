@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Singleton } from "../../utils/decorators";
+import { Singleton } from "../utils/decorators";
 
 @Singleton()
 export class Responder {
@@ -18,5 +18,8 @@ export class Responder {
             if(member) member.send(response);
             else message.author.send('Sorry, I couldn\'t find that user.')
         }
+    }
+    test() {
+        console.log('this is a test');
     }
 }

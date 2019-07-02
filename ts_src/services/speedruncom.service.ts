@@ -1,7 +1,7 @@
 import * as https from 'https';
-import { IRequest } from './interfaces';
-import { createRequest } from './util';
-import { Game, Leaderboard } from './resources';
+import { IRequest } from './speedrun/interfaces';
+import { createRequest } from './speedrun/util';
+import { Game, Leaderboard } from './speedrun/resources';
 import { WSStream } from '../utils/sstream';
 import { NodeCallback, str } from '../utils/typedefs';
 import { Singleton } from '../utils/decorators';

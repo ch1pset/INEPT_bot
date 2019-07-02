@@ -54,13 +54,18 @@ export function Mixin(mixins?: fn[]): fn {
 
 export function Singleton(){
     return function<T extends {new(...args:any[]):{}}>(ctor: T) {
-        return class extends ctor {
-            private static _self = new ctor();
+        return class Singleton extends ctor {
+            private static _self: Singleton;
             private constructor(...args: any[]) {
                 super(...args);
+                throw Error(`'new ${ctor.name}()' Cannot instantiate Singletons! You can only call singleton instances with the '.self' static property!`);
             }
             static get self() {
-                return this._self;
+                if(!Singleton._self) {
+                    Singleton._self = new ctor()
+                    console.log('Singleton created: ' + ctor.name)
+                }
+                return Singleton._self;
             }
         }
     }

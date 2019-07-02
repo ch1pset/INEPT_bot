@@ -1,4 +1,4 @@
-import { TryCatch } from "../utils/decorators";
+import { TryCatch } from "../../utils/decorators";
 import { IGame, ILevel, ICategory, IVariable, IValue } from "./interfaces";
 import { mapValueArray } from "./util";
 

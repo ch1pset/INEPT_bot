@@ -3,7 +3,7 @@ import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
 // import { RespondService } from "../services/respond.service";
 import { TryCatch } from "../../utils/decorators";
-import * as Services from '../services/index';
+import * as Services from '../../services/index';
 
 export class PingModule extends BotModule
 {

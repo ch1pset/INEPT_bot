@@ -2,19 +2,22 @@
 import { EventEmitter } from 'events';
 import { Permissions } from 'discord.js';
 import { UserData } from '../../user/user';
-import { Subscriber } from '../../utils/subscriber';
+import { Subscriber, Subscribable } from '../../utils/subscriber';
+import { Mixin } from '../../utils/decorators';
 
 const PERMISSION = Permissions.FLAGS;
 
-
-export class BotModule extends Subscriber
+@Mixin([Subscriber])
+export class BotModule implements Subscriber
 {
+    public subscribe: (target: Subscribable, event: string) => Subscriber;
+    public unsubscribe: (target: Subscribable, event: string) => Subscriber;
+
     protected ROLES: string[];
     protected PERMISSIONS: number;
 
     constructor(roles?: string[], permissions?: number)
     {
-        super();
         this.ROLES = roles;
         this.PERMISSIONS = permissions;
     }

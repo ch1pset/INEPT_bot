@@ -2,18 +2,18 @@ import * as auth from '../auth.json';
 import { BotClient } from './bot/botclient';
 import { PingModule } from './bot/modules/ping.module';
 import { SpeedrunModule } from './bot/modules/speedrun.module.js';
-import { SpeedrunCom } from './speedrun/speedrun.service.js';
-import { Responder } from './bot/services/respond.service.js';
+import * as Service from './services/index';
 
 const bot = new BotClient(auth.token.test);
-
-const ping = new PingModule(Responder.self);
+const ping = new PingModule(Service.Responder.self);
 const speedrun = new SpeedrunModule(
-    Responder.self,
-    SpeedrunCom.self
-);
+    Service.Responder.self,
+    Service.SpeedrunCom.self
+    );
+const respond = new Service.Responder();
 
-ping.subscribe(bot, 'ping');
-ping.subscribe(bot, 'pingme');
-ping.subscribe(bot, 'pinguser');
+ping.subscribe(bot, 'ping')
+    .subscribe(bot, 'pingme')
+    .subscribe(bot, 'pinguser');
+
 speedrun.subscribe(bot, 'wr');

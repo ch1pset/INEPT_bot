@@ -5,11 +5,13 @@ function subscription(instance: Subscriber, method: fn) {
 }
 
 export class Subscriber {
-    subscribe(target: Subscribable, event: string): Subscribable {
-        return target.when(event, subscription(this, this[event]));
+    subscribe(target: Subscribable, event: string): Subscriber {
+        target.when(event, subscription(this, this[event]));
+        return this;
     }
-    unsubscribe(target: Subscribable, event: string): Subscribable {
-        return target.recall(event, subscription(this, this[event]));
+    unsubscribe(target: Subscribable, event: string): Subscriber {
+        target.recall(event, subscription(this, this[event]));
+        return this;
     }
 }
 
