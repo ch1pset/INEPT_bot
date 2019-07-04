@@ -54,7 +54,7 @@ export class Category implements ICategory {
 }
 
 export class Level implements ILevel {
-    id: number;
+    id: string;
     name: string;
     weblink: string;
     rules: string;
@@ -78,7 +78,7 @@ export class Level implements ILevel {
 }
 
 export class Game implements IGame {
-    id: number;
+    id: string;
     abbreviation: string;
     name: string;
     weblink: string;

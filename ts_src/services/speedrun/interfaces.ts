@@ -33,7 +33,7 @@ export interface ICategory {
 }
 
 export interface ILevel {
-    id:             number;
+    id:             string;
     name:           string;
     weblink:        string;
     rules:          string;
@@ -44,7 +44,7 @@ export interface ILevel {
 }
 
 export interface IGame {
-    id:             number;
+    id:             string;
     abbreviation:   string;
     name:           string;
     weblink:        string;
