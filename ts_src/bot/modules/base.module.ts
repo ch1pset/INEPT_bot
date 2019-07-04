@@ -1,5 +1,3 @@
-
-import { EventEmitter } from 'events';
 import { Permissions } from 'discord.js';
 import { UserData } from '../../user/user';
 import { Subscriber, Subscribable } from '../../utils/subscriber';
@@ -16,10 +14,11 @@ export class BotModule implements Subscriber
     protected ROLES: string[];
     protected PERMISSIONS: number;
 
-    constructor(roles?: string[], permissions?: number)
+    constructor(options?: {roles?: string[], permissions?: number})
     {
-        this.ROLES = roles;
-        this.PERMISSIONS = permissions;
+        if(!options) options = {};
+        this.ROLES = options.roles;
+        this.PERMISSIONS = options.permissions;
     }
 
     protected checkPermissions(user: UserData): boolean
