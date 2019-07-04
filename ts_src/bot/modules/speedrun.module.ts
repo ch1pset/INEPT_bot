@@ -3,23 +3,15 @@ import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
 import { NodeCallback } from "../../utils/typedefs";
 import * as Services from '../../services/index';
+import { BotClient } from "../botclient";
 
 export class SpeedrunModule extends BotModule
 {
     constructor(
-        private msgService: Services.Responder,
-        private speedrunService: Services.SpeedrunCom
+        private msgService:     Services.Responder,
+        private srcomService:   Services.SpeedrunCom
     ) {
         super();
-    }
-
-    // @Log('Found run: $(run)')
-    getRecord(abrv: string, cat: string, vars: string[][], lvl: string, cb: NodeCallback<Error, any>) {
-        this.speedrunService.getLeader(abrv, cat, vars, lvl, (err, leader) => {
-            const record = leader.runs.find(r => r.place === 1).run;
-            if(record) cb(null, record);
-            else cb(err, null)
-        });
     }
 
     async wr(args: UserArgs, msg: Message) {
@@ -31,15 +23,14 @@ export class SpeedrunModule extends BotModule
             let variables = args.text.slice(1).map(a => a.split('='));
             let i = variables.findIndex(v => v[0]==='level');
             let level = (i !== -1)? variables.splice(i, 1)[0][1] : null;
-            this.getRecord(game, category, variables, level, (err, record) => {
+            this.srcomService.getWR(game, category, variables, level, (err, record) => {
                 if(!err) {
                     response = record? record.weblink : "Not found. Make sure you used the correct info for your search.";
                 }
                 else {
                     response = err.message;
                 }
-                this.msgService.reply(msg, response);
-            })
+                this.msgService.reply(msg, response)})
         }
     }
 }
