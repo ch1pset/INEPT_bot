@@ -1,67 +1,60 @@
 import * as https from 'https';
 import { IRequest } from './speedrun/interfaces';
-import { Request } from './speedrun/request';
+import { SrRequest, SRCAPI } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
 import { WSStream } from '../utils/sstream';
 import { NodeCallback, str } from '../utils/typedefs';
 import { Singleton } from '../utils/decorators';
+import { URLSearchParams } from 'url';
 
 @Singleton()
 export class SpeedrunCom {
+
     static self: SpeedrunCom;
-    private GET(request: str | IRequest | URL, callback?: NodeCallback<Error, any>): WSStream
-    {
+
+    private sendRequest(options: IRequest, cb: NodeCallback<Error, any>) {
         const wstream = new WSStream();
-        https.get(request, response => {
-            response.pipe(wstream)
-            .once('finish', () => {
-                const body = JSON.parse(wstream.data);
-                if(response.statusCode === 200) {
-                    callback(null, body.data);
+        const req = https.request(
+            options, 
+            res => res.pipe(wstream)
+                .on('finish', () => {
+                if(res.statusCode === 200) {
+                    cb(null, JSON.parse(wstream.data).data);
                 } else {
-                    const e = new Error(body.message);
-                    callback(e, null);
-                }
-            })
-            .once('error', err => {
-                console.error(err);
-                callback(err, null)
-            })
-        });
-        return wstream;
+                    cb(new Error(res.statusMessage), null);
+                }})
+                .on('error', e => cb(e, null)));
+        req.end();
     }
 
-    private getGame(abrv: str, embeds: str[], cb?: NodeCallback<Error, Game>)
-    {
-        const srcReq = Request.create(`/games?abbreviation=${abrv}&embed=${embeds.join(',')}`);
-        const wstream = this.GET(srcReq, (err, games) => {
-            if(!err) {
-                cb(null, new Game(games[0]))
-            } else {
-                cb(err, null)
-            }
-        });
-        return wstream;
+    private getGame(abrv: str, embeds: str[], cb: NodeCallback<Error, Game>) {
+        const query = new URLSearchParams();
+        query.set('abbreviation', abrv);
+        query.set('embed', embeds.join(','));
+        this.sendRequest(
+            SrRequest.create('GET', SRCAPI.ALL_GAMES.str() + '?' + query.toString()),
+            (err, resource) => cb(err, new Game(resource[0])));
     }
 
-    public getLeader(abrv: str, cat: str, vars: str[][], lvl: str, cb?: NodeCallback<Error, any>)
-    {
-        return this.getGame(abrv, ['levels.variables', 'categories.variables'], (err, game) => {
+    public getWR(abrv: str, cat: str, vars: str[][], lvl: str, cb: NodeCallback<Error, any>) {
+        this.getGame(abrv, ['levels.variables', 'categories.variables'], (err, game) => {
             if(!err) {
                 const category = game.getCategory(cat);
                 const level = game.getLevel(lvl);
-                let query = "";
-        
+                const query = new URLSearchParams();
                 if(vars) vars.forEach(v => {
                     let catvars = category.getVariableIDs(v[0], v[1]);
                     if(catvars) {
-                        query += `var-${catvars[0]}=${catvars[1]}&`;
-                    }
-                });
-                const request = Request.create(`/leaderboards/${game.id}${level? `/level/${level.id}/` : `/category/`}${category.id}?${query}`);
-                this.GET(request, (err, leader) => leader ? cb(null, leader) : cb(err, null));
+                        query.set(`var-${catvars[0]}`, catvars[1]);
+                    }});
+                query.set('top', '1');
+                const path = level ? 
+                    SRCAPI.LVL_LEADER.setIds(['gid', game.id], ['lid', level.id], ['cid', category.id]).str() 
+                    : SRCAPI.CAT_LEADER.setIds(['gid', game.id], ['cid', category.id]).str();
+                this.sendRequest(
+                    SrRequest.create('GET', path + '?' + query.toString()),
+                    (err, resource) => cb(err, resource.runs[0].run));
             }
-            else cb(err, null);
-        })
+            else cb(err, null)});
     }
 }
