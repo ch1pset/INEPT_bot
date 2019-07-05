@@ -17,7 +17,6 @@ export class Subscriber {
 
 export class Subscribable {
     _subscriptions: Map<string, Callback<any>[]>;
-
     get subscriptions(): Map<string, Callback<any>[]> {
         if(!this._subscriptions)
             this._subscriptions = new Map<string, Callback<any>[]>();
@@ -31,6 +30,12 @@ export class Subscribable {
         }
         return this;
     }
+    dispatch(event: str, ...args: any[]): Subscribable {
+        if(this.subscriptions.has(event)) {
+            this.subscriptions.get(event).forEach(cb => cb(...args))
+        }
+        return this;
+    };
     recall(event: str, cb: Callback<any>): Subscribable {
         if(this.subscriptions.has(event)) {
             const i = this.subscriptions.get(event).findIndex(cb);
@@ -40,13 +45,7 @@ export class Subscribable {
         }
         return this;
     }
-    dispatch(event: str, ...args: any[]): Subscribable {
-        if(this.subscriptions.has(event)) {
-            this.subscriptions.get(event).forEach(cb => cb(...args))
-        }
-        return this;
-    }
-    consume(event: str, ...args: any[]): Subscribable {
+    consume?: (event: str, ...args: any[]) => Subscribable = function(event, ...args){
         if(this.subscriptions.has(event)) {
             this.subscriptions.get(event).pop()(...args);
             if(this.subscriptions.get(event).length === 0)
