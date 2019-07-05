@@ -9,7 +9,7 @@ export type arr<T> = Array<T>;
 /**
  * Functions
  */
-export type NodeCallback<E, S> = (error: E, success: S) => void;
+export type NodeCallback<E, S> = (error: E, success?: S) => void;
 export type Callback<T> = (...args: any[]) => T;
 
 export type fn = Function;
