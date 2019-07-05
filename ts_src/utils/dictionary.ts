@@ -22,6 +22,12 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
     dispatch: (event: string, ...args: any[]) => Subscribable;
     consume: (event: string, ...args: any[]) => Subscribable;
 
+    constructor(fname: string) {
+        this.loadFromFile(fname, (err, dict) => {
+
+        })
+    }
+
     get array() {
         const arr = [];
         for(let key in this) {
@@ -51,12 +57,12 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
         this[key.toLowerCase()] = undefined;
         delete this[key.toLowerCase()];
     }
-    forEach(cb: Callback<T>) {
+    forEach(cb: Callback<void>) {
         for(let key in this) {
             cb(this.get(key), key);
         }
     }
-    find(cb: Callback<T>) {
+    find(cb: Callback<boolean>) {
         for(let key in this) {
             if(cb(this.get(key), key))
                 return this.get(key);
@@ -79,10 +85,13 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
                 }
             });
     }
-    readFromFile(fname: string, cb: NodeCallback<Error, Dictionary<T>>) {
+    loadFromFile(fname: string, cb: NodeCallback<Error, Dictionary<T>>) {
         console.log(`Reading from ${fname}`);
         this.busy();
-        fs.readFile(fname, 'utf8', (err, data) => {
+        fs.readFile(
+            fname,
+            'utf8',
+            (err, data) => {
             if(!err) {
                 const temp = JSON.parse(data);
                 Object.assign(this, temp);
