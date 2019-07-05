@@ -3,11 +3,11 @@ import { UserArgs } from "../../user/arguments";
 import { Message } from "discord.js";
 // import { RespondService } from "../services/respond.service";
 import { TryCatch } from "../../utils/decorators";
-import * as Services from '../../services/index';
+import * as Service from '../../services';
 
-export class PingModule extends BotModule
+export class Ping extends BotModule
 {
-    constructor(private msgService: Services.Responder) {
+    constructor(private msgService: Service.Responder) {
         super();
     }
 

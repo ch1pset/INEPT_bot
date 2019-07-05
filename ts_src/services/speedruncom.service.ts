@@ -2,9 +2,7 @@ import * as https from 'https';
 import { IRequest } from './speedrun/interfaces';
 import { SrRequest, SRCAPI } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
-import { WSStream } from '../utils/sstream';
-import { NodeCallback, str } from '../utils/typedefs';
-import { Singleton } from '../utils/decorators';
+import { Singleton, NodeCallback, WSStream, str } from '../utils';
 import { URLSearchParams } from 'url';
 
 @Singleton()

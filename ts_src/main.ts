@@ -1,12 +1,11 @@
 import * as auth from '../auth.json';
 import { BotClient } from './bot/botclient';
-import { PingModule } from './bot/modules/ping.module';
-import { SpeedrunModule } from './bot/modules/speedrun.module.js';
-import * as Service from './services/index';
+import { Ping, Speedrun } from './bot/modules';
+import * as Service from './services';
 
 const bot = new BotClient(auth.token.test);
-const ping = new PingModule(Service.Responder.self);
-const speedrun = new SpeedrunModule(
+const ping = new Ping(Service.Responder.self);
+const speedrun = new Speedrun(
     Service.Responder.self,
     Service.SpeedrunCom.self
     );
