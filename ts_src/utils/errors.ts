@@ -11,3 +11,9 @@ export class OutOfScopeError extends Error {
         super(`The property ${String(key)} is out of the scope of ${target.name}.`);
     }
 }
+
+export class SingletonInstantiationError extends Error {
+    constructor(ctor: fn) {
+        super(`At 'new ${ctor.name}()' Cannot instantiate Singletons! You can only call singleton instances with the '.self' static property!`)
+    }
+}

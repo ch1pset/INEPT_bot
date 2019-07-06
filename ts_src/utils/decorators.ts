@@ -1,4 +1,5 @@
 import { Decorator, fn, bool } from "./typedefs";
+import { SingletonInstantiationError } from "./errors";
 
 /**
  * Logs specified formatted method output to console
@@ -52,17 +53,17 @@ export function Mixin(mixins?: fn[]): fn {
     }
 }
 
-export function Singleton(...args: any[]) {
+export function Singleton(...decArgs: any[]) {
     return function<T extends {new(...args:any[]):{}}>(ctor: T) {
         return class Singleton extends ctor {
             private static _self: ThisType<T>;
-            private constructor(...args: any[]) {
-                super(...args);
-                throw Error(`'new ${ctor.name}()' Cannot instantiate Singletons! You can only call singleton instances with the '.self' static property!`);
+            private constructor(...ctorArgs: any[]) {
+                super();
+                throw new SingletonInstantiationError(ctor);
             }
             static get self() {
                 if(!Singleton._self) {
-                    Singleton._self = new ctor(...args);
+                    Singleton._self = new ctor(...decArgs);
                     console.log('Singleton created: ' + ctor.name)
                 }
                 return Singleton._self;
