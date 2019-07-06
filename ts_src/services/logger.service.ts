@@ -38,12 +38,13 @@ export class Log implements ILog {
             error: info.error,
             message: info.message,
             stack: info.stack
-            });
+        });
     }
     toString(): str {
-        const output = `${this.time} ${this.level}`
-            + this.error ? `\n${this.error}` :
-              `${this.message}\n` + this.stack;
+        let output = `${this.time} '${this.level}': `;
+        output += this.error ? 
+            `\n${this.error}` :
+            (`${this.message}` + (this.stack ? '\n' + this.stack : ''));
         return output;
     }
 }
@@ -54,22 +55,22 @@ export class Logger extends Console {
     }
     
     info(message: str) {
-        this.log(Log.create(LogLevel.INFO, {message}));
+        this.log(Log.create(LogLevel.INFO, {message}).toString());
     }
 
     debug(message: str, stack?: str) {
-        this.log(Log.create(LogLevel.DEBUG, {message, stack}));
+        this.log(Log.create(LogLevel.DEBUG, {message, stack}).toString());
     }
 
     warn(message: str) {
-        this.log(Log.create(LogLevel.WARN, {message}));
+        this.log(Log.create(LogLevel.WARN, {message}).toString());
     }
 
     eror(error: Error) {
-        this.error(Log.create(LogLevel.EROR, {error}));
+        this.error(Log.create(LogLevel.EROR, {error}).toString());
     }
 
     fatal(error: Error) {
-        this.error(Log.create(LogLevel.FATAL, {error}));
+        this.error(Log.create(LogLevel.FATAL, {error}).toString());
     }
 }
