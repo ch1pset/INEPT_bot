@@ -57,7 +57,7 @@ export class Logger extends Console {
         this.log(Log.create(LogLevel.INFO, {message}));
     }
 
-    debug(message: str, stack: str) {
+    debug(message: str, stack?: str) {
         this.log(Log.create(LogLevel.DEBUG, {message, stack}));
     }
 
