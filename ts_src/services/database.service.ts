@@ -1,53 +1,77 @@
 import { Permissions as Perms } from 'discord.js';
-import { Dictionary, Stat } from "../utils";
+import { Dictionary, Stat, str, bool, Callback, NodeCallback } from "../utils";
+import { Logger } from './logger.service';
 const PERMISSION = Perms.FLAGS;
 
-export class DbManager {
+export class DbManager<T> {
+    private _db = new Dictionary<T>();
+    private _fname: str;
 
-    private _dbList: Dictionary<any>[];
+    constructor(private logger: Logger) { }
 
-    constructor() { }
-
-    public load() {
-
+    public load(fname: str) {
+        if(this._db.status !== Stat.NULL) {
+            this._fname = fname;
+            this._db.loadFromFile(this._fname, (err, dict) => {
+                if(!err) this._db = dict;
+                else this.logger.eror(err);
+            });
+        } else {
+            const e = new Error(`Reloading database is not allowed. Reconsider your implementation.`);
+            this.logger.eror(e);
+        }
     }
 
-    // public load() {
-    //     if(this._db.status !== Stat.NULL) {
-    //         this._db.readFromFile(this.fname, (err, dict) => {
-    //             if(!err) this._db = dict;
-    //             else throw err;
-    //         });
-    //     } else {
-    //         throw Error(`Reloading database is not allowed. Reconsider your implementation.`);
-    //     }
-    // }
+    public add(name: string, link: T) {
+        this._db.set(name, link);
+        this.queue(
+            () => this.updateDB(),
+            (stat) => {
+            if(stat !== Stat.ERROR) this.logger.info(`Successfully added ${name} to database!`);
+            else this.logger.warn(`DB is busy, attempting write in 2000ms`);
+            });
+    }
 
-    // public add(name: string, link: T) {
-    //     this._db.set(name, link);
-    //     this.updateDB();
-    // }
+    public has(name: string): bool {
+        return this._db.has(name);
+    }
 
-    // public get(name: string): T {
-    //     return this._db.get(name);
-    // }
+    public get(name: string): T {
+        return this._db.get(name);
+    }
 
-    // public delete(name: string) {
-    //     this._db.delete(name);
-    //     this.updateDB();
-    // }
+    public delete(name: string) {
+        this._db.delete(name);
+        this.queue(
+            () => this.updateDB(),
+            (stat) => {
+            if(stat !== Stat.ERROR) this.logger.info(`Successfully deleted ${name} to database!`);
+            else this.logger.warn(`DB is busy, attempting write in 2000ms`);
+            });
+    }
 
-    // private updateDB() {
-    //     if(!this._db.isBusy) {
-    //         this._db.writeToFile(this.fname, err => {
-    //             if(!err) console.log('Write successful.');
-    //             else console.log('Write failed.');
-    //             })
-    //     } else {
-    //         console.log('DB is busy, attempting update in 2000ms');
-    //         setTimeout(() => {
-    //             this.updateDB();
-    //             }, 2000);
-    //     }
-    // }
+    private queue(task: Callback<any>, stat: Callback<any>) {
+        if(!this._db.isBusy) {
+            task();
+            stat(this._db.status);
+        } else {
+            stat(this._db.status);
+            setTimeout(() => {
+                task();
+                }, 2000);
+        }
+    }
+
+    private updateDB() {
+        this._db.busy();
+        this._db.writeToFile(this._fname, err => {
+            if(!err) {
+                this._db.ready();
+                this.logger.info('Write successful.');
+            } else {
+                this._db.error();
+                this.logger.info('Write failed.');
+            }
+            })
+    }
 }
