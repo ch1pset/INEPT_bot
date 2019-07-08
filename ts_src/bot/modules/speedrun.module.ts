@@ -1,5 +1,5 @@
 import { BotModule } from "./base.module";
-import { UserArgs } from "../../user/arguments";
+import { UserArgs } from "../../discord/arguments";
 import { Message } from "discord.js";
 import { NodeCallback } from "../../utils";
 import * as Service from '../../services';
@@ -8,14 +8,15 @@ export class Speedrun extends BotModule
 {
     constructor(
         private msgService:     Service.Responder,
-        private srcomService:   Service.SpeedrunCom
+        private srcomService:   Service.SpeedrunCom,
+        private logger:         Service.Logger
     ) {
         super();
     }
 
-    async wr(args: UserArgs, msg: Message) {
+    wr(args: UserArgs, msg: Message) {
         let response = '';
-        console.log('Fetching wr');
+        this.logger.info('Fetching wr');
         if(args.list[0] && args.text.length > 0) {
             let game = args.list[0];
             let category = args.text[0];

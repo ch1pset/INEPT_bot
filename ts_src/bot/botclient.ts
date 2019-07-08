@@ -1,8 +1,7 @@
-import { Client, Message } from 'discord.js';
-import * as Args from '../user/arguments';
-import { Subscribable } from '../utils/subscriber';
-import { Callback, str } from '../utils/typedefs';
-import { Mixin } from '../utils/decorators';
+import { Client, Message, Channel, TextChannel } from 'discord.js';
+import { UserArgs } from '../discord';
+import { Subscribable, Mixin, Callback, str  } from '../utils';
+import { Logger } from '../services';
 
 @Mixin([Subscribable])
 export class BotClient extends Client implements Subscribable
@@ -17,14 +16,16 @@ export class BotClient extends Client implements Subscribable
     constructor(token: str) {
         super();
         this.initialize();
-        this.login(token);
+        this.login(token)
+            .then(resolved => Logger.default.debug(`Successfully logged in as ${this.user.username}!`))
+            .catch(rejected => Logger.default.fatal(rejected));
     }
 
     private initialize() {
         this.on('message', (msg: Message) => {
             if(msg.content[0] === '!') {
-                console.log(`User ${msg.author.username} sent: ${msg.content}`);
-                let args = Args.parse(msg.content);
+                Logger.default.info(`User ${msg.author.username} sent: ${msg.content}`);
+                let args = UserArgs.parse(msg.content);
                 this.dispatch(args.cmd, args, msg);
             }
         });

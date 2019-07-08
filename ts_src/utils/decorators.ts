@@ -1,5 +1,6 @@
 import { Decorator, fn, bool } from "./typedefs";
 import { SingletonInstantiationError } from "./errors";
+import { Logger } from "../services/logger.service";
 
 /**
  * Logs specified formatted method output to console
@@ -44,6 +45,7 @@ export function Mixin(mixins?: fn[]): fn {
     return function(ctor: fn) {
         if(mixins) {
             mixins.forEach(mixin => {
+                Logger.default.info(`Applying mixin ${mixin.name} to ${ctor.name}...`);
                 const proto = Object.getOwnPropertyDescriptors(mixin.prototype);
                 for(let name in proto) {
                     Object.defineProperty(ctor.prototype, name, proto[name]);
@@ -64,7 +66,7 @@ export function Singleton(...decArgs: any[]) {
             static get self() {
                 if(!Singleton._self) {
                     Singleton._self = new ctor(...decArgs);
-                    console.log('Singleton created: ' + ctor.name)
+                    Logger.default.info('Singleton instantiated: ' + ctor.name);
                 }
                 return Singleton._self;
             }
