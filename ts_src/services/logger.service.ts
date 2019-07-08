@@ -1,5 +1,5 @@
 import { Console } from 'console';
-import { Singleton, str, bool } from "../utils";
+import { str, bool } from "../utils";
 import { Writable } from 'stream';
 
 enum LogLevel {
@@ -29,7 +29,7 @@ export class Log implements ILog {
         Object.assign(this, info);
     }
     static get timestamp() {
-        return (new Date(Date.now())).toISOString();
+        return (new Date(Date.now())).toISOString().replace(/[a-zA-Z]/, ' ');
     }
     static create(level: LogLevel, info: {error?: Error, message?: str, stack?: str}): Log {
         return new Log({
@@ -41,19 +41,22 @@ export class Log implements ILog {
         });
     }
     toString(): str {
-        let output = `${this.time} '${this.level}': `;
+        let output = `${this.time} ${this.level}: `;
         output += this.error ? 
-            `\n${this.error}` :
+            `${this.error}` :
             (`${this.message}` + (this.stack ? '\n' + this.stack : ''));
         return output;
     }
 }
 
 export class Logger extends Console {
+    private static _default = new Logger({stdout: process.stdout, colorMode: true});
     constructor(opt: {stdout: Writable, stderr?: Writable, colorMode?: bool}) {
         super(opt);
     }
-    
+    static get default() {
+        return this._default;
+    }
     info(message: str) {
         this.log(Log.create(LogLevel.INFO, {message}).toString());
     }
