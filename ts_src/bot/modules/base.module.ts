@@ -1,28 +1,19 @@
-import { Permissions } from 'discord.js';
-import { UserData } from '../../user/user';
+import { Permissions, Channel } from 'discord.js';
+import { UserData, ChannelData } from '../../discord';
 import { Subscriber, Subscribable } from '../../utils/subscriber';
 import { Mixin } from '../../utils/decorators';
+import { Restricted } from './restricted';
 
 const PERMISSION = Permissions.FLAGS;
 
-@Mixin([Subscriber])
-export class BotModule implements Subscriber
-{
-    public subscribe: (target: Subscribable, event: string) => Subscriber;
-    public unsubscribe: (target: Subscribable, event: string) => Subscriber;
+@Mixin([Restricted, Subscriber])
+export abstract class BotModule implements Subscriber, Restricted {
+    roles: string[];
+    permissions: number;
+    channels: string[];
+    chtypes: string[];
+    grantAccess: (user: UserData) => boolean;
 
-    protected ROLES: string[];
-    protected PERMISSIONS: number;
-
-    constructor(options?: {roles?: string[], permissions?: number})
-    {
-        if(!options) options = {};
-        this.ROLES = options.roles;
-        this.PERMISSIONS = options.permissions;
-    }
-
-    protected checkPermissions(user: UserData): boolean
-    {
-        return this.ROLES.some(r => user.hasRole(r)) || user.hasPermission(this.PERMISSIONS);
-    }
+    subscribe: (target: Subscribable, event: string) => Subscriber;
+    unsubscribe: (target: Subscribable, event: string) => Subscriber;
 }
