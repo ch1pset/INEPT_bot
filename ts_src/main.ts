@@ -13,7 +13,11 @@ const logger = new Service.Logger({
 const linksDB = new Service.DbManager<ILink>(logger);
 linksDB.load('./links.json');
 
-const bot = new BotClient(auth.token.bot);
+const bot = new BotClient(
+    auth.token.bot,
+    Service.Responder.self,
+    logger
+    );
 const ping = new Ping(
     Service.Responder.self,
     logger
