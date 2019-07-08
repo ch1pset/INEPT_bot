@@ -1,6 +1,6 @@
 import { NodeStringDecoder, StringDecoder } from "string_decoder";
-import { Writable, Readable } from "stream";
-import { fn, Decorator, NodeCallback, Callback } from "./typedefs";
+import { Writable, Duplex } from "stream";
+import { Decorator, NodeCallback, Callback } from "./typedefs";
 
 export class WSStream extends Writable {
     private _decoder: NodeStringDecoder
@@ -13,7 +13,7 @@ export class WSStream extends Writable {
     get data() {
         return this._data;
     }
-    _write(chunk: any, encoding: string, callback: Function) {
+    _write(chunk: any, encoding: string, callback: Callback<any>) {
         if (encoding === 'buffer') {
             chunk = this._decoder.write(chunk);
         }
@@ -26,18 +26,16 @@ export class WSStream extends Writable {
     }
 }
 
-export class RSStream extends Readable {
-    constructor(options?: { [opt: string]: any }) {
-        super(options);
-        
+class StringStream extends Duplex {
+    private _data: string = '';
+    _write(chunk: Buffer | string, encoding: string, callback: Callback<any>) {
+        if (Buffer.isBuffer(chunk))
+            chunk = chunk.toString();
+        this._data += chunk;
+        callback();
     }
-    _read(size: number) {
-        
+    _read(size?: number) {
+        if(this._data.length >= size)
+            this.push(Buffer.from(this._data));
     }
 }
-
-// export function Streamable(rw: str): Decorator<Constructor> {
-//     return function(target, key) {
-
-//     }
-// }
