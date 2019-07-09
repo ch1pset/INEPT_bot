@@ -32,7 +32,7 @@ const links = new Links(
     Service.Responder.self,
     logger
     );
-links.roles = ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Tester'];
+links.roles = ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'];
 links.permissions = PERMISSIONS.ADMINISTRATOR | PERMISSIONS.BAN_MEMBERS | PERMISSIONS.KICK_MEMBERS;
 
 ping.subscribe(bot, 'ping')
