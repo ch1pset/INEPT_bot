@@ -2,7 +2,7 @@ import * as https from 'https';
 import { IRequest } from './speedrun/interfaces';
 import { SrRequest, SRCAPI } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
-import { Singleton, NodeCallback, WSStream, str } from '../utils';
+import { Singleton, NodeCallback, str, StringStream } from '../utils';
 import { URLSearchParams } from 'url';
 
 @Singleton()
@@ -11,13 +11,13 @@ export class SpeedrunCom {
     static self: SpeedrunCom;
 
     private sendRequest(options: IRequest, cb: NodeCallback<Error, any>) {
-        const wstream = new WSStream();
+        const sstream = new StringStream();
         const req = https.request(
             options, 
-            res => res.pipe(wstream)
+            res => res.pipe(sstream)
                 .on('finish', () => {
                 if(res.statusCode === 200) {
-                    cb(null, JSON.parse(wstream.data).data);
+                    cb(null, JSON.parse(sstream.data).data);
                 } else {
                     cb(new Error(res.statusMessage), null);
                 }})
