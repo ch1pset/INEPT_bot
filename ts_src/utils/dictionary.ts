@@ -16,8 +16,8 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
     isBusy: boolean;
     failed: boolean;
 
-    _subscriptions: Map<string, Callback<any>[]>;
-    subscriptions: Map<string, Callback<any>[]>;
+    _subscriptions: Dictionary<Callback<any>[]>;
+    subscriptions: Dictionary<Callback<any>[]>;
     when: (event: string, cb: Callback<any>) => Subscribable;
     recall: (event: string, cb: Callback<any>) => Subscribable;
     dispatch: (event: string, ...args: any[]) => Subscribable;
@@ -35,6 +35,20 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
     }
     set(key: string, value: T): void {
         this[key.toLowerCase()] = value;
+    }
+    keys(): string[] {
+        const karr = [];
+        for(let key in this) {
+            karr.push(key);
+        }
+        return karr;
+    }
+    values(): T[] {
+        const tarr = [];
+        for(let t in this) {
+            tarr.push(t);
+        }
+        return tarr;
     }
     get(key: string): T {
         if(this.has(key)) {
@@ -61,6 +75,13 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
                 return this.get(key);
         }
         return null;
+    }
+    map(cb: Callback<any>): any[] {
+        const arr = [];
+        for(let key in this) {
+            arr.push(cb(this.get(key), key));
+        }
+        return arr;
     }
     writeToFile(fname: string, cb: NodeCallback<Error, Dictionary<T>>): void {
         Logger.default.info(`Writing to ${fname}`);

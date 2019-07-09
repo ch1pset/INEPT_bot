@@ -1,18 +1,19 @@
 import { Client, Message, Channel, TextChannel } from 'discord.js';
 import { UserArgs } from '../discord';
-import { Subscribable, Mixin, Callback, str  } from '../utils';
+import { Subscribable, Mixin, Callback, str, ChannelStream, Dictionary  } from '../utils';
 import { Logger, Responder } from '../services';
 
 @Mixin([Subscribable])
 export class BotClient extends Client implements Subscribable
 {
-    _subscriptions: Map<str, Callback<any>[]>;
-    subscriptions: Map<str, Callback<any>[]>;
+    _subscriptions: Dictionary<Callback<any>[]>;
+    subscriptions: Dictionary<Callback<any>[]>;
     when: (event: str, cb: Callback<any>) => Subscribable;
     recall: (event: str, cb: Callback<any>) => Subscribable;
     dispatch: (event: str, ...args: any[]) => Subscribable;
     consume: (event: str, ...args: any[]) => Subscribable;
 
+    private chLogger: Logger;
     constructor(token: str,
         private msgService: Responder,
         private logger:     Logger
@@ -21,6 +22,14 @@ export class BotClient extends Client implements Subscribable
         this.initialize();
         this.login(token)
             .then(resolved => {
+                const logChannel = new ChannelStream(
+                    <TextChannel>
+                    this.guilds.find(g => g.name === 'Ch1pset')
+                        .channels.find(c => c.name === 'botlog')
+                    );
+                this.chLogger = new Logger({ stdout: logChannel });
+                
+                this.chLogger.info(`Successfully logged in as ${this.user.username}!`);
                 this.logger.debug(`Successfully logged in as ${this.user.username}!`);
             }).catch(rejected => {
                 this.logger.fatal(rejected);
@@ -31,9 +40,10 @@ export class BotClient extends Client implements Subscribable
         this.on('message', (msg) => {
             if(msg.content[0] === '!') {
                 this.logger.info(`User ${msg.author.username} sent: ${msg.content}`);
+                this.chLogger.info(`User ${msg.author.username} sent: ${msg.content}`);
                 let args = UserArgs.parse(msg.content);
                 if(args.cmd === 'commands') {
-                    this.msgService.reply(msg, `List of commands:\n${Object.keys(this.subscriptions).map(k => `!${k}`).join(', ')}`);
+                    this.msgService.reply(msg, `List of commands:\n${this.subscriptions.keys().map(k => '!' + k).join(', ')}`);
                 } else {
                     this.dispatch(args.cmd, args, msg);
                 }
@@ -47,6 +57,8 @@ export class BotClient extends Client implements Subscribable
 
             const channel = <TextChannel>member.guild.channels.find(ch => ch.name === 'testing');
             channel.send(`Hello new member!`);
+
+            this.chLogger.info(`New member joined the server!`)
         });
 
         this.on('warn', (info) => {
