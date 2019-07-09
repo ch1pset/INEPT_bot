@@ -1,4 +1,5 @@
 import { str, Callback, fn } from './typedefs';
+import { Dictionary } from '.';
 
 function subscription(instance: Subscriber, method: fn) {
     return (...args: any[]) => method.apply(instance, args);
@@ -16,10 +17,10 @@ export class Subscriber {
 }
 
 export class Subscribable {
-    _subscriptions: Map<string, Callback<any>[]>;
-    get subscriptions(): Map<string, Callback<any>[]> {
+    _subscriptions: Dictionary<Callback<any>[]>;
+    get subscriptions(): Dictionary<Callback<any>[]> {
         if(!this._subscriptions)
-            this._subscriptions = new Map<string, Callback<any>[]>();
+            this._subscriptions = new Dictionary<Callback<any>[]>();
         return this._subscriptions;
     }
     when(event: str, cb: Callback<any>): Subscribable {
@@ -45,7 +46,7 @@ export class Subscribable {
         }
         return this;
     }
-    consume?: (event: str, ...args: any[]) => Subscribable = function(event, ...args){
+    consume(event: str, ...args: any[]): Subscribable {
         if(this.subscriptions.has(event)) {
             this.subscriptions.get(event).pop()(...args);
             if(this.subscriptions.get(event).length === 0)
