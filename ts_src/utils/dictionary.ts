@@ -51,11 +51,12 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
         return tarr;
     }
     get(key: string): T {
-        if(this.has(key)) {
-            const value = <T>{};
-            Object.assign(value, this[key.toLowerCase()]);
-            return value;
-        } else return null;
+        // if(this.has(key)) {
+        //     const value = <T>{};
+        //     Object.assign(value, this[key.toLowerCase()]);
+        //     return value;
+        // } else return null;
+        return this[key.toLowerCase()];
     }
     has(key: string): bool {
         return this[key.toLowerCase()] || false;
