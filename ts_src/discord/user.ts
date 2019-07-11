@@ -1,4 +1,4 @@
-import { Message, Collection, Role, Permissions } from 'discord.js';
+import { User, GuildMember, Collection, Role, Permissions } from 'discord.js';
 
 const PERMISSION = Permissions.FLAGS;
 
@@ -9,11 +9,11 @@ export class UserData {
     private roles: Collection<string, Role>;
     private permissions: number;
 
-    constructor(msg: Message) {
-        this.name = msg.author.username;
-        this.id = msg.author.id;
-        this.roles = msg.member? msg.member.roles : null;
-        this.permissions = msg.member? msg.member.permissions.bitfield : 0x0;
+    constructor(user: User, member: GuildMember) {
+        this.name = user.username;
+        this.id = user.id;
+        this.roles = member? member.roles : null;
+        this.permissions = member? member.permissions.bitfield : 0x0;
     }
     get isAdmin(): boolean {
         return (this.permissions & PERMISSION.ADMINISTRATOR) === PERMISSION.ADMINISTRATOR;

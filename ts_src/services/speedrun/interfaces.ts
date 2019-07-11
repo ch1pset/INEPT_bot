@@ -18,6 +18,8 @@ export interface IVariable {
     name:           string;
     scope:          string;
     values?:        IValue[];
+
+    getValue(label: string): IValue;
 }
 
 export interface ICategory {
@@ -26,23 +28,31 @@ export interface ICategory {
     weblink:        string;
     rules:          string;
     variables?:     IVariable[];
+
+    getVariableIDs(name: string, value: string):    string[];
 }
 
 export interface ILevel {
-    id:             number;
+    id:             string;
     name:           string;
     weblink:        string;
     rules:          string;
     categories?:    ICategory[];
     variables?:     IVariable[];
+
+    getVariableIDs(name: string, value: string):    string[];
 }
 
 export interface IGame {
-    id:             number;
+    id:             string;
     abbreviation:   string;
     name:           string;
     weblink:        string;
     categories?:    ICategory[];
     variables?:     IVariable[];
     levels?:        ILevel[];
+
+    getVariableIDs(name: string, value: string):    string[];
+    getCategory(name: string):                      ICategory;
+    getLevel(name: string):                         ILevel;
 }

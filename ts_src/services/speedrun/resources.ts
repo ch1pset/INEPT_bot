@@ -1,6 +1,6 @@
-import { TryCatch } from "../utils/decorators";
+import { TryCatch } from "../../utils/decorators";
 import { IGame, ILevel, ICategory, IVariable, IValue } from "./interfaces";
-import { mapValueArray } from "./util";
+
 
 export class Variable implements IVariable {
     id: string;
@@ -12,10 +12,21 @@ export class Variable implements IVariable {
         this.id = v ? v.id : null;
         this.name = v ? v.name: null;
         this.scope = v ? v.scope.type : null;
-        this.values = v ? mapValueArray(v.values.values) : null;
+        this.values = v ? this.mapValueArray(v.values.values) : null;
     }
 
-    @TryCatch({log: true})
+    private mapValueArray(values: any): IValue[] {
+        const ret: IValue[] = [];
+        for(let id in values) {
+            ret.push({
+                id: id,
+                label: values[id].label,
+                rules: values[id].rules
+            });
+        }
+        return ret;
+    }
+
     getValue(label: string) {
         return this.values.find(v => v.label === label);
     }
@@ -36,7 +47,6 @@ export class Category implements ICategory {
         this.variables = c ? c.variables.data.map((v: any) => new Variable(v)) : null;
     }
 
-    @TryCatch({log: true})
     getVariableIDs(name: string, value: string) {
         let ret = this.variables.find(v => v.name === name);
         return ret ? [ret.id, ret.getValue(value).id] : null;
@@ -44,7 +54,7 @@ export class Category implements ICategory {
 }
 
 export class Level implements ILevel {
-    id: number;
+    id: string;
     name: string;
     weblink: string;
     rules: string;
@@ -60,7 +70,6 @@ export class Level implements ILevel {
         this.variables = l.variables ? l.variables.data.map((v: any) => new Variable(v)) : null;
     }
 
-    @TryCatch({log: true})
     getVariableIDs(name: string, value: string)
     {
         let ret = this.variables.find(v => v.name === name);
@@ -69,7 +78,7 @@ export class Level implements ILevel {
 }
 
 export class Game implements IGame {
-    id: number;
+    id: string;
     abbreviation: string;
     name: string;
     weblink: string;
@@ -87,19 +96,20 @@ export class Game implements IGame {
         this.levels = g.levels ? g.levels.data.map(l => new Level(l)) : null;
     }
 
-    @TryCatch({ log: true })
     getVariableIDs(name: string, value: string) {
         let ret = this.variables.find(v => v.name === name);
         return ret ? [ret.id, ret.getValue(value).id] : null;
     }
 
-    @TryCatch({ log: true })
     getCategory(name: string) {
         return this.categories.find(c => c.name === name);
     }
 
-    @TryCatch({ log: true })
     getLevel(name: string) {
         return this.levels.find(l => l.name === name);
     }
+}
+
+export class Leaderboard {
+    
 }

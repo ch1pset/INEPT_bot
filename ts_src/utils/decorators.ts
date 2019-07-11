@@ -1,73 +1,93 @@
+import { Decorator, fn, bool } from "./typedefs";
+import { SingletonInstantiationError } from "./errors";
+import { Logger } from "../services/logger.service";
 
 /**
- * Readonly decorator freezes a property of an object.
- * Useful for defining immutable properties.
+ * Logs specified formatted method output to console
  */
-export function Readonly(initializer: any) {
-    return function(target: Object, key: PropertyKey) {
-        target[key] = initializer;
-        (typeof initializer === 'object') ? 
-            Object.freeze(target[key]) :
-            Object.defineProperty(target, key, {
-                value: initializer,
-                writable: false,
-                configurable: false
-            });
-    }
-}
-
-/**
- * Logs specified formatted message to console, injecting the result of
- * the function applied
- */
-export function LogResult(format?: string) {
-    return function(target: Object, key: PropertyKey, descriptor: PropertyDescriptor) {
-        const origin = descriptor.value;
-
-        descriptor.value = function(...args: any[]) {
-            const result = JSON.stringify(origin.apply(this, args), null, 2);
-            console.log(format ? format.replace(/%[ndsf]|\$[\w]+/ig, result) : result);
+export function Log(format: string): Decorator<any> {
+    return function(target, key, method) {
+        const origin = method.value;
+        method.value = function(...args: any[]) {
+            const result = JSON.stringify(origin.apply(target, ...args), null, 2);
+            console.log(format ? format.replace(/%\([ndsf]\)|\$\([\w]+\)/ig, result) : result);
         };
-
-        return descriptor;
+        return method;
     }
 }
 
-export function TryCatch(options?: { log?: boolean, stack?: boolean, callback?: Function }) {
-    return function(target: Object, key: PropertyKey, descriptor: PropertyDescriptor) {
-        const origin = descriptor.value;
-
-        descriptor.value = function(...args: any[]) {
+export function TryCatch(options?: { nolog?: bool, callback?: (e?: Error) => void }): Decorator<any> {
+    return function(target, key, method) {
+        const origin = method.value;
+        method.value = function(...args: any[]) {
             let ret;
             try {
-                ret = origin.apply(this, args);
+                ret = origin.apply(target, ...args);
             } catch(e) {
-                if(options.log) {
+                if(!options || !options.nolog) {
                     console.error(`Error detected in ${String(key)} from ${target}`);
                     console.error(`Triggered by ${origin}`);
+                    console.error(e);
                 }
 
-                if(options.stack || options.log)
-                    console.error(e);
-
-                if(options.callback) {
-                    options.callback(e, args);
+                if(options && options.callback) {
+                    options.callback(e);
                 }
                 ret = null;
             }
             return ret;
         }
-        return descriptor;
+        return method;
     }
 }
 
-export function Promisify(target: Object, key: PropertyKey, descriptor: PropertyDescriptor) {
-    const origin = descriptor.value;
-    descriptor.value = function(...args: any[]) {
-        return new Promise((res, rej) => {
-            const callback = (err: Error, data: any) => err ? rej(err) : res(data);
-            origin.apply(this, [...args, callback]);
-        });
+export function Mixin(mixins?: fn[]): fn {
+    return function(ctor: fn) {
+        if(mixins) {
+            mixins.forEach(mixin => {
+                Logger.default.info(`Applying mixin ${mixin.name} to ${ctor.name}...`);
+                const proto = Object.getOwnPropertyDescriptors(mixin.prototype);
+                for(let name in proto) {
+                    Object.defineProperty(ctor.prototype, name, proto[name]);
+                }
+            });
+        }
     }
-    return descriptor;
 }
+
+export function Singleton(...decArgs: any[]) {
+    return function<T extends {new(...args:any[]):{}}>(ctor: T) {
+        return class Singleton extends ctor {
+            private static _self: ThisType<T>;
+            private constructor(...ctorArgs: any[]) {
+                super();
+                throw new SingletonInstantiationError(ctor);
+            }
+            static get self() {
+                if(!Singleton._self) {
+                    Singleton._self = new ctor(...decArgs);
+                    Logger.default.info('Singleton instantiated: ' + ctor.name);
+                }
+                return Singleton._self;
+            }
+        }
+    }
+}
+
+// export function Factory() {
+//     return function<T extends {new(...args: any[]):{}}>(ctor: T) {
+//         return class extends ctor {
+//             private constructor(...args: any[]) {
+//                 super(...args);
+//             }
+//             static create(...args: any[]) {
+//                 return new ctor(...args);
+//             }
+//             static copy(other: T) {
+//                 const copy_T = {};
+//                 Object.assign(copy_T, other);
+//                 return copy_T;
+//             }
+//         }
+//     }
+// }
