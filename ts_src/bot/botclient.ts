@@ -1,4 +1,4 @@
-import { Client, Message, Channel, TextChannel } from 'discord.js';
+import { Client, Message, Channel, TextChannel, Snowflake, Collection, GuildChannel } from 'discord.js';
 import { UserArgs } from '../discord';
 import { Subscribable, Mixin, Callback, str, ChannelStream, Dictionary  } from '../utils';
 import { Logger, Responder } from '../services';
@@ -14,7 +14,8 @@ export class BotClient extends Client implements Subscribable
     consume: (event: str, ...args: any[]) => Subscribable;
 
     private chLogger: Logger;
-    constructor(token: str,
+    constructor(
+                token:      str,
         private msgService: Responder,
         private logger:     Logger
     ) {
@@ -31,6 +32,8 @@ export class BotClient extends Client implements Subscribable
                 
                 this.chLogger.info(`Successfully logged in as ${this.user.username}!`);
                 this.logger.debug(`Successfully logged in as ${this.user.username}!`);
+
+                this.dispatch('login', this.chLogger);
             }).catch(rejected => {
                 this.logger.fatal(rejected);
             });
@@ -55,8 +58,8 @@ export class BotClient extends Client implements Subscribable
                 + `I am ${this.user.username}, you can use \`!commands\` for a list of commands I can handle.\n`
                 + `Welcome to the ${member.guild.name} server!`);
 
-            const channel = <TextChannel>member.guild.channels.find(ch => ch.name === 'testing');
-            channel.send(`Hello new member!`);
+            const channel = this.getChannel('testing', member.guild.channels);
+            if(channel) channel.send(`Welcome to the ${member.guild.name} server ${member}!`);
 
             this.chLogger.info(`New member joined the server!`)
         });
@@ -67,11 +70,15 @@ export class BotClient extends Client implements Subscribable
 
         this.on('reconnecting', () => {
             this.logger.warn(`WS connection interrupted.`);
-            this.logger.info(`Reconnecting to Discord...`);
+            this.logger.warn(`Reconnecting to Discord...`);
         });
 
         this.on('disconnect', (event) => {
             this.logger.fatal(event);
         });
+    }
+
+    private getChannel(channelName: str, channels: Collection<Snowflake, GuildChannel>): TextChannel {
+        return <TextChannel>channels.find(ch => ch.name === channelName);
     }
 }

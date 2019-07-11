@@ -4,42 +4,42 @@ import { Ping, Speedrun, Links } from './bot/modules';
 import * as Service from './services';
 import { ILink } from './bot/modules/link.js';
 import { PERMISSIONS, UserArgs } from './discord';
-
-const logger = new Service.Logger({
-    stdout: process.stdout,
-    colorMode: true
-    });
-
-const linksDB = new Service.DbManager<ILink>(logger);
-linksDB.load('./links.json');
+import { Logger } from './services';
 
 const bot = new BotClient(
     auth.token.bot,
     Service.Responder.self,
-    logger
+    Logger.default
     );
-const ping = new Ping(
-    Service.Responder.self,
-    logger
-    );
-const speedrun = new Speedrun(
-    Service.Responder.self,
-    Service.SpeedrunCom.self,
-    logger
-    );
-const links = new Links(
-    linksDB,
-    Service.Responder.self,
-    logger
-    );
-links.roles = ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'];
-links.permissions = PERMISSIONS.ADMINISTRATOR | PERMISSIONS.BAN_MEMBERS | PERMISSIONS.KICK_MEMBERS;
 
-ping.subscribe(bot, 'ping')
-    .subscribe(bot, 'pingme')
-    .subscribe(bot, 'pinguser');
+bot.when('login', (chLogger: Logger) => {
+    
+    const linksDB = new Service.DbManager<ILink>(chLogger);
+    linksDB.load('./links.json');
 
-speedrun.subscribe(bot, 'wr');
-
-links.subscribe(bot, 'addlink')
-     .subscribe(bot, 'getlink');
+    const ping = new Ping(
+        Service.Responder.self,
+        chLogger
+        );
+    const speedrun = new Speedrun(
+        Service.Responder.self,
+        Service.SpeedrunCom.self,
+        chLogger
+        );
+    const links = new Links(
+        linksDB,
+        Service.Responder.self,
+        chLogger
+        );
+    links.roles = ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'];
+    links.permissions = PERMISSIONS.ADMINISTRATOR | PERMISSIONS.BAN_MEMBERS | PERMISSIONS.KICK_MEMBERS;
+    
+    ping.subscribe(bot, 'ping')
+        .subscribe(bot, 'pingme')
+        .subscribe(bot, 'pinguser');
+    
+    speedrun.subscribe(bot, 'wr');
+    
+    links.subscribe(bot, 'addlink')
+         .subscribe(bot, 'getlink');
+    });
