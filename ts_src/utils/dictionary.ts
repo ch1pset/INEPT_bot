@@ -33,9 +33,6 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
     get size(): number {
         return Object.keys(this).length;
     }
-    set(key: string, value: T): void {
-        this[key.toLowerCase()] = value;
-    }
     keys(): string[] {
         const karr = [];
         for(let key in this) {
@@ -50,12 +47,10 @@ export class Dictionary<T> implements Subscribable, AsyncStat {
         }
         return tarr;
     }
+    set(key: string, value: T): void {
+        this[key.toLowerCase()] = value;
+    }
     get(key: string): T {
-        // if(this.has(key)) {
-        //     const value = <T>{};
-        //     Object.assign(value, this[key.toLowerCase()]);
-        //     return value;
-        // } else return null;
         return this[key.toLowerCase()];
     }
     has(key: string): bool {
