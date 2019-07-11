@@ -2,16 +2,16 @@ import * as fs from 'fs';
 import { Callback, NodeCallback, bool } from './typedefs';
 import { Subscribable } from './subscriber';
 import { Mixin } from './decorators';
-import { AsyncStat, Stat } from './asyncstat';
+import { AsyncStat, Status } from './asyncstat';
 import { Logger } from '../services';
 
 @Mixin([Subscribable, AsyncStat])
-export class Dictionary<T> implements Subscribable, AsyncStat {
+export class Dictionary<T> implements Subscribable {
 
-    status: Stat;
-    ready: () => Stat;
-    busy: () => Stat;
-    error: () => Stat;
+    status: Status;
+    ready: () => Status;
+    busy: () => Status;
+    error: () => Status;
     isReady: boolean;
     isBusy: boolean;
     failed: boolean;

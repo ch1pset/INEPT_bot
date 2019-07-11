@@ -1,5 +1,7 @@
+import { EventEmitter } from "events";
+import { Logger } from "../services";
 
-export enum Stat {
+export enum Status {
     NULL = 'null',
     READY = 'ready',
     BUSY = 'busy',
@@ -7,23 +9,23 @@ export enum Stat {
 }
 
 export class AsyncStat {
-    status: Stat = Stat.NULL;
+    status: Status = Status.NULL;
     ready() {
-        return this.status = Stat.READY;
+        return this.status = Status.READY;
     }
     busy() {
-        return this.status = Stat.BUSY;
+        return this.status = Status.BUSY;
     }
     error() {
-        return this.status = Stat.ERROR;
+        return this.status = Status.ERROR;
     }
     get isReady() {
-        return this.status === Stat.READY;
+        return this.status === Status.READY;
     }
     get isBusy() {
-        return this.status === Stat.BUSY;
+        return this.status === Status.BUSY;
     }
     get failed() {
-        return this.status === Stat.ERROR;
+        return this.status === Status.ERROR;
     }
 }

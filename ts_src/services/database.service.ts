@@ -1,5 +1,5 @@
 import { Permissions as Perms } from 'discord.js';
-import { Dictionary, Stat, str, bool, Callback, NodeCallback } from "../utils";
+import { Dictionary, Status, str, bool, Callback, NodeCallback } from "../utils";
 import { Logger } from './logger.service';
 const PERMISSION = Perms.FLAGS;
 
@@ -10,7 +10,7 @@ export class DbManager<T> {
     constructor(private logger: Logger) { }
 
     public load(fname: str) {
-        if(this._db.status !== Stat.NULL) {
+        if(this._db.status !== Status.NULL) {
             this._fname = fname;
             this._db.loadFromFile(this._fname, (err, dict) => {
                 if(!err) this._db = dict;
@@ -27,7 +27,7 @@ export class DbManager<T> {
         this.queue(
             () => this.updateDB(),
             (stat) => {
-            if(stat !== Stat.ERROR) this.logger.info(`Successfully added ${name} to database!`);
+            if(stat !== Status.ERROR) this.logger.info(`Successfully added ${name} to database!`);
             else this.logger.warn(`DB is busy, attempting write in 2000ms`);
             });
     }
@@ -45,7 +45,7 @@ export class DbManager<T> {
         this.queue(
             () => this.updateDB(),
             (stat) => {
-            if(stat !== Stat.ERROR) this.logger.info(`Successfully deleted ${name} to database!`);
+            if(stat !== Status.ERROR) this.logger.info(`Successfully deleted ${name} to database!`);
             else this.logger.warn(`DB is busy, attempting write in 2000ms`);
             });
     }
