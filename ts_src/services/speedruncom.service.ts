@@ -4,6 +4,7 @@ import { SrRequest, SRCAPI } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
 import { Singleton, NodeCallback, str, StringStream } from '../utils';
 import { URLSearchParams } from 'url';
+import { Logger } from './logger.service';
 
 @Singleton()
 export class SpeedrunCom {
@@ -17,7 +18,7 @@ export class SpeedrunCom {
             res => res.pipe(sstream)
                 .on('finish', () => {
                 if(res.statusCode === 200) {
-                    cb(null, JSON.parse(sstream.data).data);
+                    cb(null, sstream.obj.data);
                 } else {
                     cb(new Error(res.statusMessage), null);
                 }})

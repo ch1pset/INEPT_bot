@@ -8,6 +8,9 @@ export class StringStream extends Duplex {
     get data() {
         return this._data.slice();
     }
+    get obj() {
+        return JSON.parse(this._data);
+    }
     _write(chunk: Buffer | string, encoding: string, callback: Callback<any>) {
         if (Buffer.isBuffer(chunk))
             chunk = chunk.toString();
