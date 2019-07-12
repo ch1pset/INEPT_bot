@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import { Callback, NodeCallback, bool } from './typedefs';
 import { Subscribable } from './subscriber';
 import { Mixin } from './decorators';
-import { AsyncStat, Status } from './asyncstat';
+import { AsyncStatus, Status } from './asyncstat';
 import { Logger } from '../services';
 
-@Mixin([AsyncStat])
-export class Dictionary<T> implements AsyncStat {
+@Mixin([AsyncStatus])
+export class Dictionary<T> implements AsyncStatus {
     on: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     once: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     off: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
@@ -16,7 +16,7 @@ export class Dictionary<T> implements AsyncStat {
     removeListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     listeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
     rawListeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
-    emit: (event: Status | "ready" | "busy" | "error" | "null") => boolean;
+    emit: (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
     removeAllListeners: (event?: Status | "ready" | "busy" | "error" | "null") => this;
     listenerCount: (type: Status | "ready" | "busy" | "error" | "null") => number;
     eventNames: () => (Status | "ready" | "busy" | "error" | "null")[];
