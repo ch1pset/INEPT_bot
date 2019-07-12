@@ -71,8 +71,12 @@ export class AsyncTaskQueue implements AsyncStatus {
             setTimeout(
                 () => {
                     const task = this.firstInQueue();
-                    task.on('done', () => resolve());
-                    task.run();
+                    if(task) {
+                        task.once('done', () => resolve());
+                        task.run();
+                    } else {
+                        resolve();
+                    }
                 }, timeout);
         });
     }
@@ -105,6 +109,10 @@ export class AsyncTaskQueue implements AsyncStatus {
         if(this.isReady || this.status === Status.NULL) {
             this.run();
         }
+    }
+
+    clear() {
+        this._queue.splice(0);
     }
 }
 
