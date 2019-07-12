@@ -1,12 +1,12 @@
 import { Permissions as Perms } from 'discord.js';
 import { Dictionary, Status, str, bool, Callback, NodeCallback } from "../utils";
 import { Logger } from './logger.service';
-import { AsyncTaskQueue } from '../utils/asyncqueue';
+import { AsyncTaskQueue } from '../utils/asynctaskqueue';
 const PERMISSION = Perms.FLAGS;
 
 export class DbManager<T> {
     private _db = new Dictionary<T>();
-    private _tasker = new AsyncTaskQueue();
+    // private _tasker = new AsyncTaskQueue();
     private _fname: str;
 
     constructor(private logger: Logger) { }
@@ -26,7 +26,7 @@ export class DbManager<T> {
 
     public add(name: string, link: T) {
         this._db.set(name, link);
-        this._tasker.queue(() => this.updateDB.apply(this));
+        // this._tasker.queue(() => this.updateDB.apply(this));
         // this.queue(
         //     () => this.updateDB(),
         //     (stat) => {
@@ -45,7 +45,7 @@ export class DbManager<T> {
 
     public delete(name: string) {
         this._db.delete(name);
-        this._tasker.queue(() => this.updateDB.apply(this));
+        // this._tasker.queue(() => this.updateDB.apply(this));
         // this.queue(
         //     () => this.updateDB(),
         //     (stat) => {
