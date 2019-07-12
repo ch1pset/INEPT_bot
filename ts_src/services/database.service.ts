@@ -1,7 +1,8 @@
 import { Permissions as Perms } from 'discord.js';
 import { Dictionary, Status, str, bool, Callback, NodeCallback } from "../utils";
 import { Logger } from './logger.service';
-import { AsyncTaskQueue } from '../utils/asynctaskqueue';
+import { AsyncTaskQueue, Task } from '../utils/asynctaskqueue';
+import { Tasker } from './tasker.service';
 const PERMISSION = Perms.FLAGS;
 
 export class DbManager<T> {
@@ -9,7 +10,10 @@ export class DbManager<T> {
     // private _tasker = new AsyncTaskQueue();
     private _fname: str;
 
-    constructor(private logger: Logger) { }
+    constructor(
+        private tasker: Tasker,
+        private logger: Logger
+        ) { }
 
     public load(fname: str) {
         if(this._db.status !== Status.NULL) {
@@ -26,7 +30,16 @@ export class DbManager<T> {
 
     public add(name: string, link: T) {
         this._db.set(name, link);
-        // this._tasker.queue(() => this.updateDB.apply(this));
+        // const update = new Task(t => {
+        //     this.updateDB()
+        //         .once('ready', () => {
+        //             t.done();
+        //         })
+        //         .once('error', () => {
+        //             t.done();
+        //         })
+        // });
+        // this.tasker.queue(update);
         // this.queue(
         //     () => this.updateDB(),
         //     (stat) => {
@@ -74,8 +87,9 @@ export class DbManager<T> {
                 this.logger.info('Write successful.');
             } else {
                 this._db.error();
-                this.logger.info('Write failed.');
+                this.logger.warn('Write failed.');
             }
-            })
+            });
+        return this._db;
     }
 }
