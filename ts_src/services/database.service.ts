@@ -1,10 +1,12 @@
 import { Permissions as Perms } from 'discord.js';
 import { Dictionary, Status, str, bool, Callback, NodeCallback } from "../utils";
 import { Logger } from './logger.service';
+import { AsyncTaskQueue } from '../utils/asyncqueue';
 const PERMISSION = Perms.FLAGS;
 
 export class DbManager<T> {
     private _db = new Dictionary<T>();
+    private _tasker = new AsyncTaskQueue();
     private _fname: str;
 
     constructor(private logger: Logger) { }
@@ -24,12 +26,13 @@ export class DbManager<T> {
 
     public add(name: string, link: T) {
         this._db.set(name, link);
-        this.queue(
-            () => this.updateDB(),
-            (stat) => {
-            if(stat !== Status.ERROR) this.logger.info(`Successfully added ${name} to database!`);
-            else this.logger.warn(`DB is busy, attempting write in 2000ms`);
-            });
+        this._tasker.queue(() => this.updateDB.apply(this));
+        // this.queue(
+        //     () => this.updateDB(),
+        //     (stat) => {
+        //     if(stat !== Status.ERROR) this.logger.info(`Successfully added ${name} to database!`);
+        //     else this.logger.warn(`DB is busy, attempting write in 2000ms`);
+        //     });
     }
 
     public has(name: string): bool {
@@ -42,25 +45,26 @@ export class DbManager<T> {
 
     public delete(name: string) {
         this._db.delete(name);
-        this.queue(
-            () => this.updateDB(),
-            (stat) => {
-            if(stat !== Status.ERROR) this.logger.info(`Successfully deleted ${name} to database!`);
-            else this.logger.warn(`DB is busy, attempting write in 2000ms`);
-            });
+        this._tasker.queue(() => this.updateDB.apply(this));
+        // this.queue(
+        //     () => this.updateDB(),
+        //     (stat) => {
+        //     if(stat !== Status.ERROR) this.logger.info(`Successfully deleted ${name} to database!`);
+        //     else this.logger.warn(`DB is busy, attempting write in 2000ms`);
+        //     });
     }
 
-    private queue(task: Callback<any>, stat: Callback<any>) {
-        if(!this._db.isBusy) {
-            task();
-            stat(this._db.status);
-        } else {
-            stat(this._db.status);
-            setTimeout(() => {
-                task();
-                }, 2000);
-        }
-    }
+    // private queue(task: Callback<any>, stat: Callback<any>) {
+    //     if(!this._db.isBusy) {
+    //         task();
+    //         stat(this._db.status);
+    //     } else {
+    //         stat(this._db.status);
+    //         setTimeout(() => {
+    //             task();
+    //             }, 2000);
+    //     }
+    // }
 
     private updateDB() {
         this._db.busy();
