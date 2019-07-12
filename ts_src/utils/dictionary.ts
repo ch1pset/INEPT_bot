@@ -5,8 +5,23 @@ import { Mixin } from './decorators';
 import { AsyncStat, Status } from './asyncstat';
 import { Logger } from '../services';
 
-@Mixin([Subscribable, AsyncStat])
-export class Dictionary<T> implements Subscribable {
+@Mixin([AsyncStat])
+export class Dictionary<T> implements AsyncStat {
+    on: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    once: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    off: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    addListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    prependListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    prependOnceListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    removeListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
+    listeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
+    rawListeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
+    emit: (event: Status | "ready" | "busy" | "error" | "null") => boolean;
+    removeAllListeners: (event?: Status | "ready" | "busy" | "error" | "null") => this;
+    listenerCount: (type: Status | "ready" | "busy" | "error" | "null") => number;
+    eventNames: () => (Status | "ready" | "busy" | "error" | "null")[];
+    getMaxListeners: () => number;
+    setMaxListeners: (n: number) => this;
 
     status: Status;
     ready: () => Status;
@@ -15,13 +30,6 @@ export class Dictionary<T> implements Subscribable {
     isReady: boolean;
     isBusy: boolean;
     failed: boolean;
-
-    _subscriptions: Dictionary<Callback<any>[]>;
-    subscriptions: Dictionary<Callback<any>[]>;
-    when: (event: string, cb: Callback<any>) => Subscribable;
-    recall: (event: string, cb: Callback<any>) => Subscribable;
-    dispatch: (event: string, ...args: any[]) => Subscribable;
-    consume: (event: string, ...args: any[]) => Subscribable;
 
     get array(): T[] {
         const arr = [];
@@ -87,11 +95,9 @@ export class Dictionary<T> implements Subscribable {
             JSON.stringify(this, (key, val)=> key === 'status' ? undefined : val, 4),
             err => {
                 if(!err) {
-                    // this.consume('done', this.ready());
                     this.ready();
                     cb(null, this);
                 } else {
-                    // this.consume('error', this.error());
                     this.error();
                     cb(err, null);
                 }
@@ -108,10 +114,8 @@ export class Dictionary<T> implements Subscribable {
                     const temp = JSON.parse(data);
                     Object.assign(this, temp);
                     this.ready();
-                    // this.consume('loaded', this.ready(), this);
                     cb(null, this);
                 } else {
-                    // this.consume('error', this.error(), err);
                     this.error();
                     cb(err, null);
                 }});

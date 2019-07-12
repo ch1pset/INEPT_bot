@@ -1,5 +1,4 @@
 import { Callback } from ".";
-import { bool } from "./typedefs";
 import { AsyncStat, Status } from "./asyncstat";
 import { Mixin } from "./decorators";
 import { Logger } from "../services";
@@ -13,6 +12,22 @@ export class AsyncTaskQueue implements AsyncStat {
     isReady:    boolean;
     isBusy:     boolean;
     failed:     boolean;
+
+     on: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     once: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     off: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     addListener: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     prependListener: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     prependOnceListener: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     removeListener: (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+     listeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
+     rawListeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
+     emit: (event: Status | "ready" | "busy" | "error" | "null") => boolean;
+     removeAllListeners: (event?: Status | "ready" | "busy" | "error" | "null") => this;
+     listenerCount: (type: Status | "ready" | "busy" | "error" | "null") => number;
+     eventNames: () => (Status | "ready" | "busy" | "error" | "null")[];
+     getMaxListeners: () => number;
+     setMaxListeners: (n: number) => this;
 
     private _queue: Callback<any>[] = [];
 
@@ -53,15 +68,19 @@ export class AsyncTaskQueue implements AsyncStat {
     }
 }
 
-const tasker = new AsyncTaskQueue();
-tasker.ready();
+// const tasker = new AsyncTaskQueue();
 
-function task(num: number) {
-    return () => console.log(`Task ${num} complete`);
-}
+// function task(num: number) {
+//     return () => console.log(`Task ${num} complete`);
+// }
 
-tasker.queue(task(1));
-tasker.queue(task(2));
-tasker.queue(task(1));
-tasker.queue(task(2));
+// tasker.on(Status.READY, () => {
+//     setTimeout(() => {
+//         tasker.queue(task(1));
+//         tasker.queue(task(2));
+//         tasker.queue(task(3));
+//         tasker.queue(task(4));
+//     }, 2000);
+// });
 
+// tasker.ready();
