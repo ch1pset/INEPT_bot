@@ -62,7 +62,7 @@ export class AsyncTaskQueue implements AsyncStat {
     queue(task: Callback<any>) {
         this._queue.push(task);
 
-        if(this.isReady) {
+        if(this.isReady || this.status === Status.NULL) {
             this.run();
         }
     }
