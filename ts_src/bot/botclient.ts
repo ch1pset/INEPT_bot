@@ -1,17 +1,16 @@
 import { Client, Message, Channel, TextChannel, Snowflake, Collection, GuildChannel } from 'discord.js';
 import { UserArgs } from '../discord';
-import { Subscribable, Mixin, Callback, str, ChannelStream, Dictionary  } from '../utils';
+import { Subscriber, Mixin, Callback, str, ChannelStream, Dictionary, fn  } from '../utils';
 import { Logger, Responder } from '../services';
 
-@Mixin([Subscribable])
-export class BotClient extends Client implements Subscribable
+@Mixin([Subscriber])
+export class BotClient extends Client implements Subscriber
 {
-    _subscriptions: Dictionary<Callback<any>[]>;
-    subscriptions: Dictionary<Callback<any>[]>;
-    when: (event: str, cb: Callback<any>) => Subscribable;
-    recall: (event: str, cb: Callback<any>) => Subscribable;
-    dispatch: (event: str, ...args: any[]) => Subscribable;
-    consume: (event: str, ...args: any[]) => Subscribable;
+    subscriptions: string[];
+    subscribe: (event: str, cb: Callback<any>) => Subscriber;
+    unsubscribe: (event: str, cb: Callback<any>) => Subscriber;
+    dispatch: (event: str, ...args: any[]) => boolean;
+    consume: (event: str, ...args: any[]) => Subscriber;
 
     private chLogger: Logger;
     constructor(
@@ -46,7 +45,7 @@ export class BotClient extends Client implements Subscribable
                 this.chLogger.info(`User ${msg.author.username} sent: ${msg.content}`);
                 let args = UserArgs.parse(msg.content);
                 if(args.cmd === 'commands') {
-                    this.msgService.reply(msg, `List of commands:\n${this.subscriptions.keys().map(k => '!' + k).join(', ')}`);
+                    this.msgService.reply(msg, `List of commands:\n${this.subscriptions.map(k => '!' + k).join(', ')}`);
                 } else {
                     this.dispatch(args.cmd, args, msg);
                 }

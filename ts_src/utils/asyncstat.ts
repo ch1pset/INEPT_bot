@@ -1,6 +1,6 @@
-import { EventEmitter } from "events";
 import { Mixin } from "./decorators";
 import { Callback } from ".";
+import { SimpleEventEmitter } from "./simple.events";
 
 
 export type status_str = 'ready' | 'busy' | 'error' | 'null';
@@ -11,8 +11,9 @@ export enum Status {
     ERROR = 'error',
 }
 
-@Mixin([EventEmitter])
-export class AsyncStatus {
+@Mixin([SimpleEventEmitter])
+export class AsyncStatus implements SimpleEventEmitter {
+    eventNames: () => (string | symbol)[];
     on:     (event:  Status | status_str, listener: Callback<void>) => this;
     once:   (event:  Status | status_str, listener: Callback<void>) => this;
     off:    (event:  Status | status_str, listener: Callback<void>) => this;
