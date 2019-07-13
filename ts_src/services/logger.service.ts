@@ -58,6 +58,8 @@ export class Logger extends Console {
         return this._default;
     }
     info(message: str) {
+        const urlMatch = message.match(/(https?:\/\/[^ "<>\\^`{|}\s]{1,500})/);
+        if(urlMatch) message = message.replace(urlMatch[1], `<${urlMatch[0]}>`);
         this.log(Log.create(LogLevel.INFO, {message}).toString());
     }
 
