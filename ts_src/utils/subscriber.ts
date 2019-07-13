@@ -1,57 +1,25 @@
-import { str, Callback, fn } from './typedefs';
-import { Dictionary } from '.';
+import { str, Callback, fn, Decorator } from './typedefs';
+import { SimpleEventEmitter } from './simple.events';
+import { Mixin } from './decorators';
 
-function subscription(instance: Subscriber, method: fn) {
-    return (...args: any[]) => method.apply(instance, args);
-}
-
-export class Subscriber {
-    subscribe(target: Subscribable, event: string): Subscriber {
-        target.when(event, subscription(this, this[event]));
-        return this;
+@Mixin([SimpleEventEmitter])
+export class Subscriber implements SimpleEventEmitter {
+    eventNames: () => (string | symbol)[];
+    on: (event: string | symbol, listener: Callback<void>) => this;
+    once: (event: string | symbol, listener: Callback<void>) => this;
+    off: (event: string | symbol, listener: Callback<void>) => this;
+    emit: (event: string | symbol, ...args: any[]) => boolean;
+   
+    get subscriptions() {
+        return this.eventNames();
     }
-    unsubscribe(target: Subscribable, event: string): Subscriber {
-        target.recall(event, subscription(this, this[event]));
-        return this;
+    subscribe(event: str, cb: Callback<any>): Subscriber {
+        return this.on(event, cb);
     }
-}
-
-export class Subscribable {
-    _subscriptions: Dictionary<Callback<any>[]>;
-    get subscriptions(): Dictionary<Callback<any>[]> {
-        if(!this._subscriptions)
-            this._subscriptions = new Dictionary<Callback<any>[]>();
-        return this._subscriptions;
-    }
-    when(event: str, cb: Callback<any>): Subscribable {
-        if(this.subscriptions.has(event)) {
-            this.subscriptions.get(event).push(cb);
-        } else {
-            this.subscriptions.set(event, [cb]);
-        }
-        return this;
-    }
-    dispatch(event: str, ...args: any[]): Subscribable {
-        if(this.subscriptions.has(event)) {
-            this.subscriptions.get(event).forEach(cb => cb(...args))
-        }
-        return this;
+    dispatch(event: str, ...args: any[]): boolean {
+        return this.emit(event, ...args);
     };
-    recall(event: str, cb: Callback<any>): Subscribable {
-        if(this.subscriptions.has(event)) {
-            const i = this.subscriptions.get(event).findIndex(cb);
-            if(i !== -1) this.subscriptions.get(event).slice(i, 1);
-            if(this.subscriptions.get(event).length === 0)
-                this.subscriptions.delete(event);
-        }
-        return this;
-    }
-    consume(event: str, ...args: any[]): Subscribable {
-        if(this.subscriptions.has(event)) {
-            this.subscriptions.get(event).pop()(...args);
-            if(this.subscriptions.get(event).length === 0)
-                this.subscriptions.delete(event);
-        }
-        return this;
+    unsubscribe(event: str, cb: Callback<any>): Subscriber {
+        return this.off(event, cb);
     }
 }
