@@ -8,13 +8,13 @@ export class BotClient extends Client implements Subscriber
 {
     subscriptions: string[];
     subscribe: (event: str, cb: Callback<any>) => Subscriber;
+    subscribeAll: (events: any[][]) => void;
     unsubscribe: (event: str, cb: Callback<any>) => Subscriber;
     dispatch: (event: str, ...args: any[]) => boolean;
     consume: (event: str, ...args: any[]) => Subscriber;
 
     private chLogger: Logger;
-    constructor(
-                token:      str,
+    constructor(token:      str,
         private msgService: Responder,
         private logger:     Logger
     ) {
@@ -44,16 +44,12 @@ export class BotClient extends Client implements Subscriber
                 this.logger.info(`User ${msg.author.username} sent: ${msg.content}`);
                 this.chLogger.info(`User ${msg.author.username} sent: ${msg.content}`);
                 let args = UserArgs.parse(msg.content);
-                if(args.cmd === 'commands') {
-                    this.msgService.reply(msg, `List of commands:\n${this.subscriptions.map(k => '!' + k).join(', ')}`);
-                } else {
-                    this.dispatch(args.cmd, args, msg);
-                }
+                this.dispatch(args.cmd, args, msg);
             }
         });
 
         this.on('guildMemberAdd', (member) => {
-            member.send(`Hello ${member.displayName}!\n\n` 
+            member.send(`Hello ${member}!\n\n` 
                 + `I am ${this.user.username}, you can use \`!commands\` for a list of commands I can handle.\n`
                 + `Welcome to the ${member.guild.name} server!`);
 

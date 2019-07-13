@@ -16,6 +16,9 @@ export class Subscriber implements SimpleEventEmitter {
     subscribe(event: str, cb: Callback<any>): Subscriber {
         return this.on(event, cb);
     }
+    subscribeAll(events: any[][]) {
+        events.forEach(([name, listener]: [string, (...args: any[]) => void]) => this.subscribe(name, listener));
+    }
     dispatch(event: str, ...args: any[]): boolean {
         return this.emit(event, ...args);
     };
