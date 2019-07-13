@@ -1,5 +1,4 @@
 import { EventEmitter } from "events";
-import { Logger } from "../services";
 import { Mixin } from "./decorators";
 import { Callback } from ".";
 
