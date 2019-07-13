@@ -5,7 +5,7 @@ import { Task } from "./task";
 
  @Mixin([AsyncStatus])
 export class AsyncTaskQueue implements AsyncStatus {
-    status:     Status;
+    status:     Status = Status.NULL;
     ready:      () => Status;
     busy:       () => Status;
     error:      () => Status;
