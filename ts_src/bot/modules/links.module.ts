@@ -2,10 +2,18 @@ import { BotModule } from "./base.module";
 import { Permissions, Message } from 'discord.js';
 import { UserArgs, ChannelData } from "../../discord";
 import { DbManager, Responder, Logger } from '../../services';
-import { ILink } from "./link";
 import { UserData } from "../../discord";
 import { str } from "../../utils";
 const PERMISSION = Permissions.FLAGS;
+
+
+export interface ILink {
+    name: string;
+    url: string;
+    op: string;
+    date: string;
+    tags?: string[];
+}
 
 export class Links extends BotModule {
 
@@ -29,11 +37,12 @@ export class Links extends BotModule {
         return { name, url, op, date };
     }
 
-    addlink(args: UserArgs, msg: Message) {
+    add(args: UserArgs, msg: Message) {
         const user = new UserData(msg.author, msg.member);
         const channel = new ChannelData(msg.channel, msg.guild);
         if(this.grantAccess(user) && channel.isText) {
             if(args.list[0] && args.url) {
+                if(args.list[0].startsWith('_')) args.list[0] = args.list[0].substring(1);
                 const link = this.createLink(args.list[0], args.url, user.name, this.date);
                 if(!this.dbService.has(link.name)) {
                     this.dbService.add(link.name, link);
@@ -55,9 +64,34 @@ export class Links extends BotModule {
         }
     }
 
-    getlink(args: UserArgs, msg: Message) {
-        const link = this.dbService.get(args.list[0]);
-        if(link) this.msgService.send(msg, this.format(link));
-        else this.msgService.reply(msg, `I couldn't find that link. Use \`!addlink <url> [linkname]\` to add a new one.`)
+    delete(args: UserArgs, msg: Message) {
+        const user = new UserData(msg.author, msg.member);
+        const channel = new ChannelData(msg.channel, msg.guild);
+        if(this.grantAccess(user) && channel.isText) {
+            if(args.list[0]) {
+                if(this.dbService.has(args.list[0])) {
+                    if(this.dbService.get(args.list[0]).op === user.name) {
+                        this.dbService.delete(args.list[0]);
+                        this.msgService.reply(msg, `Link has been deleted!`);
+                    } else {
+                        this.msgService.reply(msg, `Only the OP of a link can delete it.`)
+                    }
+                } else {
+                    this.msgService.reply(msg, `I could not find that link!`);
+                }
+            } else {
+                this.msgService.reply(msg, `You need to include the name of the link you want to delete.`);
+            }
+        } else {
+            this.msgService.reply(msg, `You don't have access to this command in this channel!`);
+        }
+    }
+
+    get(args: UserArgs, msg: Message) {
+        if(args.list[0]) {
+            const link = this.dbService.get(args.list[0]);
+            if(link) this.msgService.send(msg, this.format(link));
+            else this.msgService.reply(msg, `I couldn't find that link. Use \`!addlink <url> [linkname]\` to add a new one.`)
+        } else this.msgService.reply(msg, `You must include the name of the link!`);
     }
 }
