@@ -13,22 +13,11 @@ export enum Status {
 }
 
 @Mixin([EventEmitter])
-export class AsyncStatus implements EventEmitter {
-    on:                     (event:  Status | status_str, listener: Callback<void>) => this;
-    once:                   (event:  Status | status_str, listener: Callback<void>) => this;
-    off:                    (event:  Status | status_str, listener: Callback<void>) => this;
-    addListener:            (event:  Status | status_str, listener: Callback<void>) => this;
-    prependListener:        (event:  Status | status_str, listener: Callback<void>) => this;
-    prependOnceListener:    (event:  Status | status_str, listener: Callback<void>) => this;
-    removeListener:         (event:  Status | status_str, listener: Callback<void>) => this;
-    listeners:              (event:  Status | status_str) => Function[];
-    rawListeners:           (event:  Status | status_str) => Function[];
-    emit:                   (event:  Status | status_str, ...args: any[]) => boolean;
-    removeAllListeners:     (event?: Status | status_str) => this;
-    listenerCount:          (type:   Status | status_str) => number;
-    eventNames:             () =>   (Status | status_str)[];
-    getMaxListeners:        () => number;
-    setMaxListeners:        (n: number) => this;
+export class AsyncStatus {
+    on:     (event:  Status | status_str, listener: Callback<void>) => this;
+    once:   (event:  Status | status_str, listener: Callback<void>) => this;
+    off:    (event:  Status | status_str, listener: Callback<void>) => this;
+    emit:   (event:  Status | status_str, ...args: any[]) => boolean;
 
     status: Status = Status.NULL;
     ready() {

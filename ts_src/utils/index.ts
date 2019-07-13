@@ -6,3 +6,5 @@ export * from './typedefs';
 export * from './dictionary';
 export * from './asyncstat';
 export * from './errors';
+export * from './task';
+export * from './asynctaskqueue';

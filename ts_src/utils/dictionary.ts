@@ -10,18 +10,7 @@ export class Dictionary<T> implements AsyncStatus {
     on: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     once: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     off: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
-    addListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
-    prependListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
-    prependOnceListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
-    removeListener: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
-    listeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
-    rawListeners: (event: Status | "ready" | "busy" | "error" | "null") => Function[];
     emit: (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
-    removeAllListeners: (event?: Status | "ready" | "busy" | "error" | "null") => this;
-    listenerCount: (type: Status | "ready" | "busy" | "error" | "null") => number;
-    eventNames: () => (Status | "ready" | "busy" | "error" | "null")[];
-    getMaxListeners: () => number;
-    setMaxListeners: (n: number) => this;
 
     status: Status;
     ready: () => Status;

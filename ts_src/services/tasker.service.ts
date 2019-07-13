@@ -1,4 +1,4 @@
-import { AsyncTaskQueue, Task } from "../utils/asynctaskqueue";
+import { AsyncTaskQueue, Status, Task } from "../utils";
 import { Logger } from "./logger.service";
 
 export class Tasker {
@@ -8,6 +8,9 @@ export class Tasker {
 
     queue(task: Task) {
         this._tasks.queue(task);
+        if(this._tasks.isReady || this._tasks.status === Status.NULL) {
+            this._tasks.run();
+        }
     }
 
     clear() {
