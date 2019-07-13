@@ -81,7 +81,9 @@ export class Dictionary<T> implements AsyncStatus {
         this.busy();
         fs.writeFile(
             fname,
-            JSON.stringify(this, (key, val)=> key === 'status' ? undefined : val, 4),
+            JSON.stringify(this,
+                (key, val)=> key === 'status' || key.startsWith('_') ? undefined : val,
+                 4),
             err => {
                 if(!err) {
                     this.ready();
