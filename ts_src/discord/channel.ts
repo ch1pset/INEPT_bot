@@ -10,7 +10,7 @@ export class ChannelData {
     public type: string;
 
     constructor(channel: Channel, guild: Guild) {
-        this.server = guild.name;
+        this.server = guild? guild.name : null;
         this.name = channel['name'];
         this.id = channel.id;
         this.type = channel.type;
