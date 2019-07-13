@@ -4,23 +4,25 @@ import { Ping, Speedrun, Links } from './bot/modules';
 import * as Service from './services';
 import { ILink } from './bot/modules/link.js';
 import { PERMISSIONS, UserArgs } from './discord';
-import { Logger } from './services';
 
 const bot = new BotClient(
     auth.token.bot,
     Service.Responder.self,
-    Logger.default
+    Service.Logger.default
     );
 
-bot.when('login', (chLogger: Logger) => {
+bot.when('login', (chLogger: Service.Logger) => {
     
-    const linksDB = new Service.DbManager<ILink>(chLogger);
+    const dbTasker = new Service.Tasker(chLogger);
+    const linksDB = new Service.DbManager<ILink>(dbTasker, chLogger);
     linksDB.load('./links.json');
 
     const ping = new Ping(
         Service.Responder.self,
         chLogger
         );
+
+    // const srTasker = new Service.Tasker(chLogger);
     const speedrun = new Speedrun(
         Service.Responder.self,
         Service.SpeedrunCom.self,

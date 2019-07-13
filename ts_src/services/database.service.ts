@@ -1,13 +1,10 @@
 import { Permissions as Perms } from 'discord.js';
-import { Dictionary, Status, str, bool, Callback, NodeCallback } from "../utils";
-import { Logger } from './logger.service';
-import { AsyncTaskQueue, Task } from '../utils/asynctaskqueue';
-import { Tasker } from './tasker.service';
+import { Dictionary, Status, str, bool, Task } from "../utils";
+import { Logger, Tasker } from '.';
 const PERMISSION = Perms.FLAGS;
 
 export class DbManager<T> {
     private _db = new Dictionary<T>();
-    // private _tasker = new AsyncTaskQueue();
     private _fname: str;
 
     constructor(
@@ -30,22 +27,7 @@ export class DbManager<T> {
 
     public add(name: string, link: T) {
         this._db.set(name, link);
-        // const update = new Task(t => {
-        //     this.updateDB()
-        //         .once('ready', () => {
-        //             t.done();
-        //         })
-        //         .once('error', () => {
-        //             t.done();
-        //         })
-        // });
-        // this.tasker.queue(update);
-        // this.queue(
-        //     () => this.updateDB(),
-        //     (stat) => {
-        //     if(stat !== Status.ERROR) this.logger.info(`Successfully added ${name} to database!`);
-        //     else this.logger.warn(`DB is busy, attempting write in 2000ms`);
-        //     });
+        this.queueUpdate();
     }
 
     public has(name: string): bool {
@@ -58,26 +40,21 @@ export class DbManager<T> {
 
     public delete(name: string) {
         this._db.delete(name);
-        // this._tasker.queue(() => this.updateDB.apply(this));
-        // this.queue(
-        //     () => this.updateDB(),
-        //     (stat) => {
-        //     if(stat !== Status.ERROR) this.logger.info(`Successfully deleted ${name} to database!`);
-        //     else this.logger.warn(`DB is busy, attempting write in 2000ms`);
-        //     });
+        this.queueUpdate();
     }
 
-    // private queue(task: Callback<any>, stat: Callback<any>) {
-    //     if(!this._db.isBusy) {
-    //         task();
-    //         stat(this._db.status);
-    //     } else {
-    //         stat(this._db.status);
-    //         setTimeout(() => {
-    //             task();
-    //             }, 2000);
-    //     }
-    // }
+    private queueUpdate() {
+        const update = Task.create(task => {
+            this.updateDB()
+                .once('ready', () => {
+                    task.done();
+                })
+                .once('error', () => {
+                    task.error(new Error(`Database update failed.`));
+                });
+            });
+        this.tasker.queue(update);
+    }
 
     private updateDB() {
         this._db.busy();
