@@ -25,13 +25,11 @@ export class AsyncTaskQueue implements AsyncStatus {
             setTimeout(
                 () => {
                     const task = this.dequeue();
-                    if(task) {
-                        task.once('done', () => resolve())
-                            .once('error', (e) => reject(e));
-                        task.run();
-                    } else {
-                        resolve();
-                    }
+                    if(task) 
+                        task.once('done', resolve)
+                            .once('error', reject)
+                            .run();
+                    else resolve();
                 }, timeout);
         });
     }
@@ -52,6 +50,10 @@ export class AsyncTaskQueue implements AsyncStatus {
     get length(): number {
         return this._queue.length;
     }
+
+    set timeout(t_ms: number) {
+        this._timeout = t_ms;
+    }
     
     dequeue(): Task {
         return this._queue.shift();
@@ -59,9 +61,11 @@ export class AsyncTaskQueue implements AsyncStatus {
 
     queue(task: Task) {
         this._queue.push(task);
+        return this;
     }
 
     clear() {
         this._queue.splice(0);
+        return this;
     }
 }
