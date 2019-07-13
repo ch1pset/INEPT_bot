@@ -63,6 +63,10 @@ export class BotClient extends Client implements Subscriber
             this.logger.warn(info);
         });
 
+        this.on('error', (err) => {
+            this.logger.eror(err);
+        });
+
         this.on('reconnecting', () => {
             this.logger.warn(`WS connection interrupted.`);
             this.logger.warn(`Reconnecting to Discord...`);
