@@ -3,7 +3,7 @@ import { str } from "../../utils";
 import { UserData, ChannelData } from "../../discord";
 const PERMISSION = Permissions.FLAGS;
 
-export abstract class Restricted {
+export class Restricted {
     roles: str[];
     permissions: number;
     channels: str[];
