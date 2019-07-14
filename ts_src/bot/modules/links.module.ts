@@ -1,49 +1,60 @@
-import { BotModule } from "./base.module";
 import { Permissions, Message } from 'discord.js';
 import { UserArgs, ChannelData } from "../../discord";
 import { DbManager, Responder, Logger } from '../../services';
 import { UserData } from "../../discord";
-import { str } from "../../utils";
+import { str, Log, TryCatch, Mixin, Factory } from "../../utils";
+import { Restricted } from "./restricted.module";
 const PERMISSION = Permissions.FLAGS;
 
-
-export interface ILink {
+@Factory()
+export class Link {
+    static create: (...args: any[]) => Link;
+    static copy: (...args: any[]) => Link;
     name: string;
     url: string;
     op: string;
     date: string;
     tags?: string[];
-}
-
-export class Links extends BotModule {
-
-    constructor(
-        private dbService:  DbManager<ILink>,
-        private msgService: Responder,
-        private logger:     Logger
-    ) {
-        super();
+    constructor(name: str, url: str, op: str, date: str) {
+        this.name = name;
+        this.url = url;
+        this.op = op;
+        this.date = date;
     }
-
-    private get date() {
+    static get curDate() {
         return (new Date(Date.now())).toISOString().split('T')[0];
     }
-
-    private format(link: ILink): string {
-        return `${link.name} ${link.url} \nPosted by ${link.op} on ${link.date}`;
+    toString(): string {
+        return `${this.name} ${this.url}\nPosted by ${this.op} on ${this.date}`;
     }
+}
 
-    private createLink(name: str, url: str, op: str, date: str): ILink {
-        return { name, url, op, date };
-    }
+@Mixin([Restricted])
+export class Links implements Restricted {
+    roles: string[];
+    permissions: number;
+    channels: string[];
+    chtypes: string[];
+    grantAccess: (user: UserData) => boolean;
 
+    constructor(
+        private dbService:  DbManager<Link>,
+        private msgService: Responder,
+        private logger:     Logger
+    ) { }
+
+    @TryCatch({
+        callback: (err) => {
+            if(!err) console.log(`Added new link.`);
+        }
+    })
     add(args: UserArgs, msg: Message) {
         const user = new UserData(msg.author, msg.member);
         const channel = new ChannelData(msg.channel, msg.guild);
         if(this.grantAccess(user) && channel.isText) {
             if(args.list[0] && args.url) {
                 if(args.list[0].startsWith('_')) args.list[0] = args.list[0].substring(1);
-                const link = this.createLink(args.list[0], args.url, user.name, this.date);
+                const link = Link.create(args.list[0], args.url, user.name, Link.curDate);
                 if(!this.dbService.has(link.name)) {
                     this.dbService.add(link.name, link);
                     this.msgService.reply(msg, `Link added! Use \`!getlink ${link.name}\` to call it.`);
@@ -87,11 +98,17 @@ export class Links extends BotModule {
         }
     }
 
+    @TryCatch({
+        callback: (err) => {
+            if(!err) console.log('Success');
+            else console.log(err);
+        }
+    })
     get(args: UserArgs, msg: Message) {
         if(args.list[0]) {
-            const link = this.dbService.get(args.list[0]);
-            if(link) this.msgService.send(msg, this.format(link));
-            else this.msgService.reply(msg, `I couldn't find that link. Use \`!addlink <url> [linkname]\` to add a new one.`)
+            const link = Link.copy(this.dbService.get(args.list[0]));
+            if(link) this.msgService.send(msg, link.toString());
+            else this.msgService.reply(msg, `I couldn't find that link. Use \`!addlink [linkname] <url>\` to add a new one.`)
         } else this.msgService.reply(msg, `You must include the name of the link!`);
     }
 }

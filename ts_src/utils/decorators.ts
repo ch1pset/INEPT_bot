@@ -1,41 +1,54 @@
-import { Decorator, fn, bool } from "./typedefs";
+import { Decorator, fn, bool, NodeCallback, Constructor } from "./typedefs";
 import { SingletonInstantiationError } from "./errors";
 import { Logger } from "../services/logger.service";
+import { RUN, MODE } from "../config";
 
 /**
  * Logs specified formatted method output to console
  */
-export function Log(format: string): Decorator<any> {
+export function Log(format?: string): Decorator<any> {
     return function(target, key, method) {
-        const origin = method.value;
-        method.value = function(...args: any[]) {
-            const result = JSON.stringify(origin.apply(target, ...args), null, 2);
-            console.log(format ? format.replace(/%\([ndsf]\)|\$\([\w]+\)/ig, result) : result);
-        };
+        if(RUN.MODE === MODE.DEBUG) {
+            const origin = method.value;
+            method.value = function(...args: any[]) {
+                const result = origin.apply(this, args);
+                const output = JSON.stringify(result, null, 2);
+                console.log(format ? 
+                    format.replace(/%\([ndsf]\)|\$\([\w]+\)/ig, output) 
+                    : output);
+                return result;
+            };
+        }
         return method;
     }
 }
 
-export function TryCatch(options?: { nolog?: bool, callback?: (e?: Error) => void }): Decorator<any> {
+export function TryCatch(options?: { nolog?: bool, callback?: NodeCallback<Error, any>}): Decorator<any> {
     return function(target, key, method) {
-        const origin = method.value;
-        method.value = function(...args: any[]) {
-            let ret;
-            try {
-                ret = origin.apply(target, ...args);
-            } catch(e) {
-                if(!options || !options.nolog) {
-                    console.error(`Error detected in ${String(key)} from ${target}`);
-                    console.error(`Triggered by ${origin}`);
-                    console.error(e);
-                }
+        if(RUN.MODE === MODE.DEBUG) {
+            const origin = method.value;
+            method.value = function(...args: any[]) {
+                let ret: any;
+                try {
+                    ret = origin.apply(this, args);
 
-                if(options && options.callback) {
-                    options.callback(e);
+                    if(options && options.callback) {
+                        options.callback(null, ret ? ret : {});
+                    }
+                } catch(e) {
+                    if(!options || !options.nolog) {
+                        console.error(`Error detected in ${String(key)} from ${target}`);
+                        console.error(`Triggered by ${origin}`);
+                        console.error(e);
+                    }
+
+                    if(options && options.callback) {
+                        options.callback(e);
+                    }
+                    ret = null;
                 }
-                ret = null;
+                return ret;
             }
-            return ret;
         }
         return method;
     }
@@ -56,7 +69,7 @@ export function Mixin(mixins?: fn[]): fn {
 }
 
 export function Singleton(...decArgs: any[]) {
-    return function<T extends {new(...args:any[]):{}}>(ctor: T) {
+    return function<T extends {new(...args: any[]):{}}>(ctor: T) {
         return class Singleton extends ctor {
             private static _self: ThisType<T>;
             private constructor(...ctorArgs: any[]) {
@@ -74,20 +87,22 @@ export function Singleton(...decArgs: any[]) {
     }
 }
 
-// export function Factory() {
-//     return function<T extends {new(...args: any[]):{}}>(ctor: T) {
-//         return class extends ctor {
-//             private constructor(...args: any[]) {
-//                 super(...args);
-//             }
-//             static create(...args: any[]) {
-//                 return new ctor(...args);
-//             }
-//             static copy(other: T) {
-//                 const copy_T = {};
-//                 Object.assign(copy_T, other);
-//                 return copy_T;
-//             }
-//         }
-//     }
-// }
+export function Factory() {
+    return function<T extends Constructor>(ctor: T) {
+        return class extends ctor {
+            private constructor(...args: any[]) {
+                super(...args);
+            }
+            static create(...args: any[]) {
+                return new ctor(...args);
+            }
+            static copy(other: T) {
+                if(other) {
+                    const copy_T = new ctor();
+                    Object.assign(copy_T, other);
+                    return copy_T;
+                } else return null;
+            }
+        }
+    }
+}

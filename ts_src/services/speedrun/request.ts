@@ -1,7 +1,11 @@
 import { IRequest } from "./interfaces";
-import { str } from "../../utils/typedefs";
+import { Factory } from "../../utils";
 
+
+@Factory() 
 export class SrRequest implements IRequest {
+    static create: (method: string, path: string) => SrRequest;
+
     hostname = "www.speedrun.com";
     path = '/api/v1';
     headers = {
@@ -9,13 +13,10 @@ export class SrRequest implements IRequest {
         "User-Agent":"INEPT_bot/0.1.a"
     };
     method?: string;
-    private constructor() { }
 
-    static create(method: str, path: str): IRequest {
-        const req = new SrRequest();
-        req.path += path? path : '';
-        req.method = method ? method.toUpperCase() : 'GET';
-        return req
+    constructor(method: string, path: string) {
+        this.path += path;
+        this.method = method.toUpperCase();
     }
 }
 

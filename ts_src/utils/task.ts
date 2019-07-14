@@ -1,8 +1,12 @@
-import { Mixin, Callback } from ".";
+import { Factory, Mixin, Callback } from ".";
 import { SimpleEventEmitter } from "./simple.events";
 
+@Factory()
 @Mixin([SimpleEventEmitter])
 export class Task implements SimpleEventEmitter {
+    static create: (task: (thisArg: Task) => void) => Task;
+    static copy: (task: Task) => Task;
+
     eventNames: () => (string | symbol)[];
     on:     (event: 'done' | 'error', listener: Callback<void>) => this;
     once:   (event: 'done' | 'error', listener: Callback<void>) => this;
@@ -10,12 +14,10 @@ export class Task implements SimpleEventEmitter {
     emit:   (event: 'done' | 'error', ...args: any[]) => boolean;
 
     private _task: (thisArg: Task) => void;
-    private constructor(task: (thisArg: Task) => void) {
+    constructor(task: (thisArg: Task) => void) {
         this._task = task;
     }
-    static create(task: (thisArg: Task) => void) {
-        return new Task(task);
-    }
+    
     get name() {
         return this._task.name;
     }
