@@ -1,16 +1,13 @@
-import { BotModule } from "./base.module";
 import { UserArgs } from "../../discord";
 import { Message } from "discord.js";
 import * as Service from '../../services';
 
-export class Ping extends BotModule
+export class Ping
 {
     constructor(
         private msgService: Service.Responder,
         private logger: Service.Logger
-        ) {
-        super();
-    }
+    ) { }
 
     ping(args: UserArgs, msg: Message) {
         this.logger.info(msg.author.username);
