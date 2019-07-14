@@ -1,18 +1,15 @@
-import { BotModule } from "./base.module";
 import { UserArgs } from "../../discord/arguments";
 import { Message } from "discord.js";
 import { NodeCallback } from "../../utils";
 import * as Service from '../../services';
 
-export class Speedrun extends BotModule
+export class Speedrun
 {
     constructor(
         private msgService:     Service.Responder,
         private srcomService:   Service.SpeedrunCom,
         private logger:         Service.Logger
-    ) {
-        super();
-    }
+    ) { }
 
     wr(args: UserArgs, msg: Message) {
         let response = '';
@@ -31,6 +28,8 @@ export class Speedrun extends BotModule
                     response = err.message;
                 }
                 this.msgService.reply(msg, response)})
+        } else {
+            this.msgService.reply(msg, `You need to include the game abbreviation, and the FULL CATEGORY name in double quotes("").`);
         }
     }
 }
