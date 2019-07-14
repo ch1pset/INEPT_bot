@@ -1,4 +1,4 @@
-import { str, Callback, fn, Decorator } from './typedefs';
+import { str, Callback } from './typedefs';
 import { SimpleEventEmitter } from './simple.events';
 import { Mixin } from './decorators';
 
