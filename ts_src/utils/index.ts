@@ -1,5 +1,5 @@
-
 export * from './decorators';
+export * from './rest';
 export * from './streams';
 export * from './subscriber';
 export * from './typedefs';
