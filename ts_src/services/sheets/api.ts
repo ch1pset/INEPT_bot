@@ -1,4 +1,4 @@
-import * as config from '../../../config.json';
+import { auth } from '../../../config.json';
 import * as https from 'https';
 import { URLSearchParams } from 'url';
 import { IRequest, StringStream } from '../../utils';
@@ -7,21 +7,18 @@ export class GRequest implements IRequest {
     hostname = 'sheets.googleapis.com';
     path = '/v4/spreadsheets';
     headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'Accept': 'application/json'
     }
-    data: {}
-    constructor(id: string, range: string, data?: {}) {
+    constructor(id: string, range: string) {
         const query = new URLSearchParams();
-        query.set('key', config.auth.api.google);
+        query.set('key', auth.api.google);
         this.path += '/' + id;
         this.path += '/values/' + range.replace(':', '%3A');
         this.path += '?' + query.toString();
-        this.data = data;
     }
 }
 
-// const options1 = new GRequest(config.sheets.guides, 'A:F');
+// const options1 = new GRequest(sheets.guides, 'A:F');
 // const sstream = new StringStream();
 // const req1 = https.request(
 //     options1,

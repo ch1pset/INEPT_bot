@@ -1,4 +1,4 @@
-import * as config from '../config.json';
+import { auth } from '../config.json';
 import { BotClient } from './bot/botclient';
 import { Ping, Speedrun, Links, Link } from './bot/modules';
 import * as Service from './services';
@@ -8,7 +8,7 @@ import { Message } from 'discord.js';
 
 const respondService = new Service.Responder();
 const bot = new BotClient(
-    config.auth.token.bot,
+    auth.token.bot,
     respondService,
     Service.Logger.default
     );
