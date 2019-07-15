@@ -1,5 +1,4 @@
 import { Decorator, fn, bool, NodeCallback, Constructor } from "./typedefs";
-import { SingletonInstantiationError } from "./errors";
 import { Logger } from "../services";
 import { RUN, MODE } from "../config";
 
