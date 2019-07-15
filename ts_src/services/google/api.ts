@@ -11,7 +11,7 @@ export class GRequest implements IRequest {
         'Content-Type': 'application/json',
     }
     data: {}
-    constructor(id: string, range?: string, data?: {}) {
+    constructor(id: string, range: string, data?: {}) {
         const query = new URLSearchParams();
         query.set('key', config.auth.api.google);
         this.path += '/' + id;
@@ -21,7 +21,7 @@ export class GRequest implements IRequest {
     }
 }
 
-// const options1 = new GRequest('GET', sheets.guides, 'A:F');
+// const options1 = new GRequest(config.sheets.guides, 'A:F');
 // const sstream = new StringStream();
 // const req1 = https.request(
 //     options1,
