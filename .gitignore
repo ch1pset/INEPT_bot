@@ -4,6 +4,7 @@
 /test
 /.vscode
 auth.json
+config.json
 links.json
 tags.json
 *.log
