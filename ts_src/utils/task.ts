@@ -1,11 +1,8 @@
 import { Mixin, Callback } from ".";
 import { SimpleEventEmitter } from "./simple.events";
-import { Cloner } from "./cloner";
 
-@Mixin([SimpleEventEmitter, Cloner])
-export class Task implements SimpleEventEmitter, Cloner {
-    static clone: (task: Task) => Task;
-
+@Mixin([SimpleEventEmitter])
+export class Task implements SimpleEventEmitter {
     eventNames: () => (string | symbol)[];
     on:     (event: 'done' | 'error', listener: Callback<void>) => this;
     once:   (event: 'done' | 'error', listener: Callback<void>) => this;
