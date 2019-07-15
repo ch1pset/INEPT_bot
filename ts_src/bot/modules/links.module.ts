@@ -2,14 +2,14 @@ import { Permissions, Message } from 'discord.js';
 import { UserArgs, ChannelData } from "../../discord";
 import { DbManager, Responder, Logger } from '../../services';
 import { UserData } from "../../discord";
-import { str, Log, TryCatch, Mixin, Factory } from "../../utils";
+import { str, Log, TryCatch, Mixin } from "../../utils";
 import { Restricted } from "./restricted.module";
+import { Cloner } from '../../utils/cloner';
 const PERMISSION = Permissions.FLAGS;
 
-@Factory()
-export class Link {
-    static create: (...args: any[]) => Link;
-    static copy: (...args: any[]) => Link;
+@Mixin([Cloner])
+export class Link implements Cloner {
+    static clone: (other: Link) => Link;
     name: string;
     url: string;
     op: string;
@@ -54,7 +54,7 @@ export class Links implements Restricted {
         if(this.grantAccess(user) && channel.isText) {
             if(args.list[0] && args.url) {
                 if(args.list[0].startsWith('_')) args.list[0] = args.list[0].substring(1);
-                const link = Link.create(args.list[0], args.url, user.name, Link.curDate);
+                const link = new Link(args.list[0], args.url, user.name, Link.curDate);
                 if(!this.dbService.has(link.name)) {
                     this.dbService.add(link.name, link);
                     this.msgService.reply(msg, `Link added! Use \`!getlink ${link.name}\` to call it.`);
@@ -106,7 +106,7 @@ export class Links implements Restricted {
     })
     get(args: UserArgs, msg: Message) {
         if(args.list[0]) {
-            const link = Link.copy(this.dbService.get(args.list[0]));
+            const link = Link.clone(this.dbService.get(args.list[0]));
             if(link) this.msgService.send(msg, link.toString());
             else this.msgService.reply(msg, `I couldn't find that link. Use \`!addlink [linkname] <url>\` to add a new one.`)
         } else this.msgService.reply(msg, `You must include the name of the link!`);

@@ -1,11 +1,7 @@
-import { IRequest } from "./interfaces";
-import { Factory } from "../../utils";
 
+import { IRequest } from "../../utils/rest";
 
-@Factory() 
 export class SrRequest implements IRequest {
-    static create: (method: string, path: string) => SrRequest;
-
     hostname = "www.speedrun.com";
     path = '/api/v1';
     headers = {

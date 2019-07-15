@@ -6,10 +6,10 @@ import { PERMISSIONS, UserArgs } from './discord';
 import { Command } from './utils';
 import { Message } from 'discord.js';
 
-
+const respondService = new Service.Responder();
 const bot = new BotClient(
     auth.token.bot,
-    Service.Responder.self,
+    respondService,
     Service.Logger.default
     );
 
@@ -20,19 +20,19 @@ bot.subscribe('login', (chLogger: Service.Logger) => {
     linksDB.load('./links.json');
 
     const pinger = new Ping(
-        Service.Responder.self,
+        respondService,
         chLogger
         );
 
-    // const srTasker = new Service.Tasker(chLogger);
+    const srcomService = new Service.SpeedrunCom();
     const speedrun = new Speedrun(
-        Service.Responder.self,
-        Service.SpeedrunCom.self,
+        respondService,
+        srcomService,
         chLogger
         );
     const links = new Links(
         linksDB,
-        Service.Responder.self,
+        respondService,
         chLogger
         );
     links.roles = ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'];

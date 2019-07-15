@@ -44,7 +44,7 @@ export class DbManager<T> {
     }
 
     private queueUpdate() {
-        const update = Task.create(task => {
+        const update = new Task(task => {
             this.updateDB()
                 .once('ready', () => {
                     task.done();

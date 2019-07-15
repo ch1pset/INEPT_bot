@@ -1,15 +1,12 @@
 import * as https from 'https';
-import { IRequest } from './speedrun/interfaces';
+import { IRequest } from '../utils/rest';
 import { SrRequest, SRCAPI } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
-import { Singleton, NodeCallback, str, StringStream } from '../utils';
+import { NodeCallback, str, StringStream } from '../utils';
 import { URLSearchParams } from 'url';
 import { Logger } from './logger.service';
 
-@Singleton()
 export class SpeedrunCom {
-
-    static self: SpeedrunCom;
 
     private sendRequest(options: IRequest, cb: NodeCallback<Error, any>) {
         const sstream = new StringStream();
@@ -31,7 +28,7 @@ export class SpeedrunCom {
         query.set('abbreviation', abrv);
         query.set('embed', embeds.join(','));
         this.sendRequest(
-            SrRequest.create('GET', SRCAPI.ALL_GAMES.str() + '?' + query.toString()),
+            new SrRequest('GET', SRCAPI.ALL_GAMES.str() + '?' + query.toString()),
             (err, resource) => cb(err, new Game(resource[0])));
     }
 
@@ -51,7 +48,7 @@ export class SpeedrunCom {
                     SRCAPI.LVL_LEADER.setIds(['gid', game.id], ['lid', level.id], ['cid', category.id]).str() 
                     : SRCAPI.CAT_LEADER.setIds(['gid', game.id], ['cid', category.id]).str();
                 this.sendRequest(
-                    SrRequest.create('GET', path + '?' + query.toString()),
+                    new SrRequest('GET', path + '?' + query.toString()),
                     (err, resource) => cb(err, resource.runs[0].run));
             }
             else cb(err, null)});

@@ -1,6 +1,6 @@
 import { Decorator, fn, bool, NodeCallback, Constructor } from "./typedefs";
 import { SingletonInstantiationError } from "./errors";
-import { Logger } from "../services/logger.service";
+import { Logger } from "../services";
 import { RUN, MODE } from "../config";
 
 /**
@@ -68,41 +68,41 @@ export function Mixin(mixins?: fn[]): fn {
     }
 }
 
-export function Singleton(...decArgs: any[]) {
-    return function<T extends {new(...args: any[]):{}}>(ctor: T) {
-        return class Singleton extends ctor {
-            private static _self: ThisType<T>;
-            private constructor(...ctorArgs: any[]) {
-                super();
-                throw new SingletonInstantiationError(ctor);
-            }
-            static get self() {
-                if(!Singleton._self) {
-                    Singleton._self = new ctor(...decArgs);
-                    Logger.default.info('Singleton instantiated: ' + ctor.name);
-                }
-                return Singleton._self;
-            }
-        }
-    }
-}
+// export function Singleton(...decArgs: any[]) {
+//     return function<T extends {new(...args: any[]):{}}>(ctor: T) {
+//         return class Singleton extends ctor {
+//             private static _self: ThisType<T>;
+//             private constructor(...ctorArgs: any[]) {
+//                 super();
+//                 throw new SingletonInstantiationError(ctor);
+//             }
+//             static get self() {
+//                 if(!Singleton._self) {
+//                     Singleton._self = new ctor(...decArgs);
+//                     Logger.default.info('Singleton instantiated: ' + ctor.name);
+//                 }
+//                 return Singleton._self;
+//             }
+//         }
+//     }
+// }
 
-export function Factory() {
-    return function<T extends Constructor>(ctor: T) {
-        return class extends ctor {
-            private constructor(...args: any[]) {
-                super(...args);
-            }
-            static create(...args: any[]) {
-                return new ctor(...args);
-            }
-            static copy(other: T) {
-                if(other) {
-                    const copy_T = new ctor();
-                    Object.assign(copy_T, other);
-                    return copy_T;
-                } else return null;
-            }
-        }
-    }
-}
+// export function Factory() {
+//     return function<T extends Constructor>(ctor: T) {
+//         return class extends ctor {
+//             private constructor(...args: any[]) {
+//                 super(...args);
+//             }
+//             static create(...args: any[]) {
+//                 return new ctor(...args);
+//             }
+//             static copy(other: T) {
+//                 if(other) {
+//                     const copy_T = new ctor();
+//                     Object.assign(copy_T, other);
+//                     return copy_T;
+//                 } else return null;
+//             }
+//         }
+//     }
+// }
