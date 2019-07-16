@@ -1,7 +1,6 @@
-import { auth } from '../../../config.json';
-import * as https from 'https';
+import { api } from '../../../config.json';
 import { URLSearchParams } from 'url';
-import { IRequest, StringStream } from '../../utils';
+import { IRequest } from '../../utils';
 
 export class GRequest implements IRequest {
     hostname = 'sheets.googleapis.com';
@@ -11,53 +10,9 @@ export class GRequest implements IRequest {
     }
     constructor(id: string, range: string) {
         const query = new URLSearchParams();
-        query.set('key', auth.api.google);
+        query.set('key', api.google.sheets);
         this.path += '/' + id;
         this.path += '/values/' + range.replace(':', '%3A');
         this.path += '?' + query.toString();
     }
 }
-
-// const options1 = new GRequest(sheets.guides, 'A:F');
-// const sstream = new StringStream();
-// const req1 = https.request(
-//     options1,
-//     res => res.pipe(sstream)
-//         .on('finish', () => {
-//             console.log(sstream.data);
-//         })
-//         .on('error', (e) => {
-//             console.log(e);
-//         })
-// );
-// req1.end();
-
-// const options2 = GRequest.create('POST', sheets.guides, 'A:F', {
-//     "majorDimension": "ROWS",
-//     "range": "A:F",
-//     "values": [
-//         'test',
-//         'https://example.com',
-//         (new Date(Date.now())).toISOString().split('T')[0],
-//         'Easy',
-//         'None'
-//     ]
-// });
-// const req2 = https.request(
-//     options2,
-//     res => res.pipe(sstream)
-//         .on('finish', () => {
-//             console.log(sstream.data);
-//         })
-//         .on('error', (e) => {
-//             console.log(e);
-//         })
-// )
-// req2.end();
-
-
-// POST /[SPREADSHEETID]/values/[RANGE]:append?key=[YOUR_API_KEY] HTTP/1.1
-// 
-// Authorization: Bearer [YOUR_ACCESS_TOKEN]
-// Accept: application/json
-// Content-Type: application/json
