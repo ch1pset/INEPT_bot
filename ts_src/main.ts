@@ -12,7 +12,7 @@ const bot = new BotClient(token, respondService, Service.Logger.default);
 bot.subscribe('login', (chLogger: Service.Logger) => {
     
     const dbTasker = new Service.Tasker(chLogger);
-    const srcomService = new Service.SpeedrunCom();
+    // const srcomService = new Service.SpeedrunCom();
     const linksDB = new Service.DbManager<Link>(dbTasker, chLogger);
     const access = new AccessRestrictions(
         ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'],
@@ -20,12 +20,12 @@ bot.subscribe('login', (chLogger: Service.Logger) => {
     linksDB.load('./links.json');
 
     const pinger =      Ping(respondService, chLogger);
-    const speedrun =    Speedrun(respondService, srcomService, chLogger);
+    // const speedrun =    Speedrun(respondService, srcomService, chLogger);
     const links =       Links(access, linksDB, respondService, chLogger);
 
     const commands: Command[] = [
         ['ping',        pinger.ping ],
-        ['wr',          speedrun.wr ],
+        // ['wr',          speedrun.wr ],
         ['addlink',     links.add   ],
         ['deletelink',  links.delete],
         ['getlink',     links.get   ],
