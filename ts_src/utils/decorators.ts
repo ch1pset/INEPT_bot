@@ -5,7 +5,7 @@ import { RUN, MODE } from "../config";
 /**
  * Logs specified formatted method output to console
  */
-export function Log(format?: string): Decorator<any> {
+export function LogResult(format?: string): Decorator<any> {
     return function(target, key, method) {
         if(RUN.MODE === MODE.DEBUG) {
             const origin = method.value;
