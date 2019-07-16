@@ -12,3 +12,5 @@ To install dependencies, first install NodeJS by clicking on above link. Then `c
 npm install
 ```
 Dependencies listed in `package.json` will be automatically installed and updated.
+
+[Privacy Policy](/privacy_policy)
