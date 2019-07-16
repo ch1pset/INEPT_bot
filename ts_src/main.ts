@@ -1,49 +1,34 @@
-import { auth } from '../config.json';
+import { api } from '../config.json';
 import { BotClient } from './bot/botclient';
-import { Ping, Speedrun, Links, Link } from './bot/modules';
+import { Links, Link, Speedrun, Ping, AccessRestrictions } from './bot/modules';
 import * as Service from './services';
-import { PERMISSIONS, UserArgs } from './discord';
+import { PERMISSIONS } from './discord';
 import { Command } from './utils';
-import { Message } from 'discord.js';
 
+const token = api.discord.bot;
 const respondService = new Service.Responder();
-const bot = new BotClient(
-    auth.token.bot,
-    respondService,
-    Service.Logger.default
-    );
+const bot = new BotClient(token, respondService, Service.Logger.default);
 
 bot.subscribe('login', (chLogger: Service.Logger) => {
     
     const dbTasker = new Service.Tasker(chLogger);
+    const srcomService = new Service.SpeedrunCom();
     const linksDB = new Service.DbManager<Link>(dbTasker, chLogger);
+    const access = new AccessRestrictions(
+        ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'],
+        PERMISSIONS.ADMINISTRATOR | PERMISSIONS.BAN_MEMBERS | PERMISSIONS.KICK_MEMBERS);
     linksDB.load('./links.json');
 
-    const pinger = new Ping(
-        respondService,
-        chLogger
-        );
-
-    const srcomService = new Service.SpeedrunCom();
-    const speedrun = new Speedrun(
-        respondService,
-        srcomService,
-        chLogger
-        );
-    const links = new Links(
-        linksDB,
-        respondService,
-        chLogger
-        );
-    links.roles = ['Mods', 'Runners', 'Community-Dev', 'Dev', 'Testers'];
-    links.permissions = PERMISSIONS.ADMINISTRATOR | PERMISSIONS.BAN_MEMBERS | PERMISSIONS.KICK_MEMBERS;
+    const pinger =      Ping(respondService, chLogger);
+    const speedrun =    Speedrun(respondService, srcomService, chLogger);
+    const links =       Links(access, linksDB, respondService, chLogger);
 
     const commands: Command[] = [
-        ['ping',        (args, msg) => pinger.ping(args, msg)   ],
-        ['addlink',     (args, msg) => links.add(args, msg)     ],
-        ['deletelink',  (args, msg) => links.delete(args, msg)  ],
-        ['getlink',     (args, msg) => links.get(args, msg)     ],
-        ['wr',          (args, msg) => speedrun.wr(args, msg)   ],
+        ['ping',        pinger.ping ],
+        ['wr',          speedrun.wr ],
+        ['addlink',     links.add   ],
+        ['deletelink',  links.delete],
+        ['getlink',     links.get   ],
         ['commands',    (args, msg) => msg.reply('You can use these commands:\n' + commands.map(([name, cb]) => '!' + name).join(', '))]
     ];
     bot.subscribeAll(commands);
