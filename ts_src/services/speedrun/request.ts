@@ -1,4 +1,4 @@
-
+import { URLSearchParams } from 'url';
 import { IRequest } from "../../utils/rest";
 
 export class SrRequest implements IRequest {
@@ -10,8 +10,9 @@ export class SrRequest implements IRequest {
     };
     method?: string;
 
-    constructor(method: string, path: string) {
-        this.path += path;
+    constructor(method: string, path: Route, query: URLSearchParams) {
+        this.path += path.toString();
+        this.path += query.toString();
         this.method = method.toUpperCase();
     }
 }
@@ -21,7 +22,7 @@ export class Route {
     constructor(path: string) {
         this.path = path;
     }
-    str() {
+    toString() {
         return this.path;
     }
     setId(idType: string, idVal: string) {
