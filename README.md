@@ -7,8 +7,8 @@ INEPT is a discord chatbot written from scratch. While this is primarily a learn
 + [Discord.js](https://discord.js.org)
 + [@types/node](https://www.npmjs.com/package/@types/node)
 
-To install dependencies:
+To install dependencies, first install NodeJS by clicking on above link. Then `cd` into the project directory and run:
 ```
 npm install
 ```
-in the project directory.
+Dependencies listed in `package.json` will be automatically installed and updated.
