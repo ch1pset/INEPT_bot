@@ -13,4 +13,4 @@ npm install
 ```
 Dependencies listed in `package.json` will be automatically installed and updated.
 
-[Privacy Policy](/privacy_policy)
+[Privacy Policy](/INEPT_bot/privacy_policy)
