@@ -2,11 +2,24 @@ import * as https from 'https';
 import { IRequest } from '../utils/rest';
 import { SrRequest, SRCAPI } from './speedrun/request';
 import { Game, Leaderboard } from './speedrun/resources';
-import { NodeCallback, str, StringStream } from '../utils';
+import { NodeCallback, str, StringStream, AsyncStatus, Mixin, Status, Callback } from '../utils';
 import { URLSearchParams } from 'url';
 import { Logger } from './logger.service';
 
-export class SpeedrunCom {
+@Mixin([AsyncStatus])
+export class SpeedrunCom implements AsyncStatus {
+    eventNames: () => (string | symbol)[];
+    on:     (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+    once:   (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+    off:    (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+    emit:   (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
+    status: Status;
+    ready: () => Status;
+    busy: () => Status;
+    error: (err: Error) => Status;
+    isReady: boolean;
+    isBusy: boolean;
+    failed: boolean;
 
     private sendRequest(options: IRequest, cb: NodeCallback<Error, any>) {
         const sstream = new StringStream();
