@@ -13,7 +13,6 @@ export enum Status {
 
 @Mixin([SimpleEventEmitter])
 export class AsyncStatus implements SimpleEventEmitter {
-    eventNames: () => (string | symbol)[];
     on:     (event:  Status | status_str, listener: Callback<void>) => this;
     once:   (event:  Status | status_str, listener: Callback<void>) => this;
     off:    (event:  Status | status_str, listener: Callback<void>) => this;

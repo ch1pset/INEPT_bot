@@ -6,7 +6,6 @@ import { Logger } from '../services';
 
 @Mixin([AsyncStatus])
 export class Dictionary<T> implements AsyncStatus {
-    eventNames: () => (string | symbol)[];
     on: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     once: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     off: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
