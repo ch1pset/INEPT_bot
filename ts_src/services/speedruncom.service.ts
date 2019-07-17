@@ -1,8 +1,8 @@
 import * as https from 'https';
 import { IRequest } from '../utils/rest';
 import { SrRequest, SRCAPI } from './speedrun/request';
-import { Game, Leaderboard } from './speedrun/resources';
-import { NodeCallback, str, StringStream, AsyncStatus, Mixin, Status, Callback } from '../utils';
+import { Game, Leaderboard, Category, Level } from './speedrun/resources';
+import { NodeCallback, str, StringStream, AsyncStatus, Mixin, Status, Callback, ResourceNotFoundError } from '../utils';
 import { URLSearchParams } from 'url';
 import { Logger } from './logger.service';
 
@@ -22,18 +22,39 @@ export class SpeedrunCom implements AsyncStatus {
     failed: boolean;
 
     private _game: Game;
-    constructor(
-        private gid: string
-    ) {
+    constructor(private gid: string) {
         this.init();
     }
 
     private init() {
+        this.busy();
         const query = new URLSearchParams([
             ['embeds','levels.variables,categories.variables']
         ]);
         const options = new SrRequest('GET', SRCAPI.GAME.setId('gid', this.gid), query);
-        
+        const sstream = new StringStream();
+        https.request(
+            options,
+            res => res.pipe(sstream)
+                .once('finish', () => {
+                    if(res.statusCode === 200) {
+                        this._game = new Game(sstream.obj.data);
+                        this.ready();
+                    } else {
+                        this.error(new ResourceNotFoundError(Game.name));
+                    }
+                })
+                .once('error', (err) => {
+                    this.error(err);
+                }));
+    }
+
+    getCategory(name: string): Category {
+        return this._game.getCategory(name);
+    }
+
+    getLevel(name: string): Level {
+        return this._game.getLevel(name);
     }
 
     // private sendRequest(options: IRequest, cb: NodeCallback<Error, any>) {
