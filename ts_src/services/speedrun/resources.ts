@@ -1,115 +1,178 @@
-import { TryCatch } from "../../utils/decorators";
-import { IGame, ILevel, ICategory, IVariable, IValue } from "./interfaces";
-
-
-export class Variable implements IVariable {
-    id: string;
-    name: string;
-    scope: string;
-    values?: IValue[];
-
-    constructor(v: any) {
-        this.id = v ? v.id : null;
-        this.name = v ? v.name: null;
-        this.scope = v ? v.scope.type : null;
-        this.values = v ? this.mapValueArray(v.values.values) : null;
-    }
-
-    private mapValueArray(values: any): IValue[] {
-        const ret: IValue[] = [];
-        for(let id in values) {
-            ret.push({
-                id: id,
-                label: values[id].label,
-                rules: values[id].rules
-            });
-        }
-        return ret;
-    }
-
-    getValue(label: string) {
-        return this.values.find(v => v.label === label);
-    }
+export interface Leaderboard {
+    weblink:                string;
+    game:                   string;
+    category:               string;
+    level:                  string;
+    platform:               string;
+    region:                 string;
+    emulators:              boolean;
+    'video-only':           boolean;
+    timing:                 string;
+    values:                 {[id: string]: string};
+    runs:                   {place: number, run: Run[]}[];
+    links:                  Links[];
 }
 
-export class Category implements ICategory {
-    id: string;    
-    name: string;
-    weblink: string;
-    rules: string;
-    variables?: Variable[];
-
-    constructor(c: any) {
-        this.id = c ? c.id : null;
-        this.name = c ? c.name : null;
-        this.weblink = c ? c.weblink : null;
-        this.rules = c ? c.rules : null;
-        this.variables = c ? c.variables.data.map((v: any) => new Variable(v)) : null;
-    }
-
-    getVariableIDs(name: string, value: string) {
-        let ret = this.variables.find(v => v.name === name);
-        return ret ? [ret.id, ret.getValue(value).id] : null;
-    }
+export interface Run {
+    id:                     string;
+    weblink:                string;
+    game:                   string;
+    level?:                 Level;
+    category:               string;
+    videos:                 {text?: string, links: Links[]}
+    comment:                string;
+    status:                 Status;
+    players:                Player[];
+    date:                   string;
+    submitted:              string;
+    times:                  Times;
+    system:                 System;
+    splits:                 Links;
+    values:                 {[id: string]: string};
+    links:                  Links[];
 }
 
-export class Level implements ILevel {
-    id: string;
-    name: string;
-    weblink: string;
-    rules: string;
-    categories: Category[];
-    variables: Variable[];
-
-    constructor(l: any) {
-        this.id = l ? l.id : null;
-        this.name = l ? l.name : null;
-        this.weblink = l ? l.weblink : null;
-        this.rules = l ? l.rules : null;
-        this.categories = l.categories ? l.categories.data.map((c: any) => new Category(c)) : null;
-        this.variables = l.variables ? l.variables.data.map((v: any) => new Variable(v)) : null;
-    }
-
-    getVariableIDs(name: string, value: string)
-    {
-        let ret = this.variables.find(v => v.name === name);
-        return ret? [ret.id, ret.getValue(value).id] : null;
-    }
+export interface System {
+    platform:               string;
+    emulated:               boolean;
+    region:                 string;
 }
 
-export class Game implements IGame {
-    id: string;
-    abbreviation: string;
-    name: string;
-    weblink: string;
-    categories?: Category[];
-    variables?: Variable[];
-    levels?: Level[];
-
-    constructor(g: any) {
-        this.id = g.id;
-        this.abbreviation = g.abbreviation;
-        this.name = g.names.international;
-        this.weblink = g.weblink;
-        this.categories = g.categories ? g.categories.data.map(c => new Category(c)) : null;
-        this.variables = g.variables ? g.variables.data.map(v => new Variable(v)) : null;
-        this.levels = g.levels ? g.levels.data.map(l => new Level(l)) : null;
-    }
-
-    getVariableIDs(name: string, value: string) {
-        let ret = this.variables.find(v => v.name === name);
-        return ret ? [ret.id, ret.getValue(value).id] : null;
-    }
-
-    getCategory(name: string) {
-        return this.categories.find(c => c.name === name);
-    }
-
-    getLevel(name: string) {
-        return this.levels.find(l => l.name === name);
-    }
+export interface Times {
+    primary:                string;
+    primary_t:              number;
+    realtime:               string;
+    realtime_t:             number;
+    realtime_noloads:       string;
+    realtime_noloads_t:     number;
+    ingame:                 string;
+    ingame_t:               number;
 }
 
-export class Leaderboard {
-    
+export interface Player {
+    rel:                    string;
+    id:                     string;
+    uri:                    string;
+}
+
+export interface Status {
+    status:                 string;
+    examiner:               string;
+    'verify-date':          string;
+}
+
+export interface Game {
+    id:                     string;
+    names:                  Names;
+    abbreviation:           string;
+    weblink:                string;
+    release?:               number;
+    'release-date':         string;
+    rulset:                 Ruleset;
+    romhack?:               boolean;
+    gametypes:              string[];
+    platforms:              string[];
+    regions:                string[];
+    genres:                 string[];
+    engines:                string[];
+    developers:             string[];
+    publishers:             string[];
+    moderators:             {[id: string]: string};
+    created:                string;
+    assets:                 Assets;
+    links:                  Links[];
+
+    categories?:            {data: Category[]};
+    variables?:             {data: Variable[]};
+    levels?:                {data: Level[]};
+}
+
+export interface Category {
+    id:                     string;
+    name:                   string;
+    weblink:                string;
+    type:                   string;
+    rules:                  string;
+    players:                Players;
+    miscellaneous:          boolean;
+    links:                  Links[];
+
+    variables?:             {data: Variable[]};
+}
+
+export interface Level {
+    id:                     string;
+    name:                   string;
+    weblink:                string;
+    rules:                  string;
+    links:                  Links[];
+
+    categories?:            {data: Category[]};
+    variables?:             {data: Variable[]};
+}
+
+export interface Variable {
+    id:                     string;
+    name:                   string;
+    category:               boolean;
+    scope:                  {[prop: string]: string};
+    mandatory:              boolean;
+    'user-defined':         boolean;
+    obsoletes:              boolean;
+    values:                 {[id: string]: Value};
+    'is-subcategory':       boolean;
+    links:                  Links[];
+}
+
+export interface Value {
+    label:                  string;
+    rules:                  string;
+    flags:                  {[name: string]: boolean};
+}
+
+export interface Assets {
+    logo:                   Asset;
+    icon:                   Asset;
+    'cover-tiny':           Asset;
+    'cover-small':          Asset;
+    'cover-medium':         Asset;
+    'cover-large':          Asset;
+    'trophy-1st':           Asset;
+    'trophy-2nd':           Asset;
+    'trophy-3rd':           Asset;
+    'trophy-4th'?:          Asset;
+    foreground?:            Asset;
+    background?:            Asset;
+}
+
+export interface Asset {
+    uri:                    string;
+    width:                  number;
+    height:                 number;
+}
+
+
+export interface Players {
+    type:                   string;
+    value:                  number;
+}
+
+export interface Links {
+    rel?:                    string;
+    uri:                    string;
+}
+
+export interface Names {
+    international:          string;
+    japanese:               string;
+    twitch:                 string;
+}
+
+export interface Ruleset {
+    'show-milliseconds':    boolean;
+    'require-verification': boolean;
+    'require-video':        boolean;
+    'run-times':            string[];
+    'default-time':         string;
+    'emulators-allowed':    boolean;
 }

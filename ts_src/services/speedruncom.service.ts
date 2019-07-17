@@ -1,14 +1,13 @@
 import * as https from 'https';
 import { IRequest } from '../utils/rest';
 import { SrRequest, SRCAPI } from './speedrun/request';
-import { Game, Leaderboard, Category, Level } from './speedrun/resources';
+import * as Resource from './speedrun/resources';
 import { NodeCallback, str, StringStream, AsyncStatus, Mixin, Status, Callback, ResourceNotFoundError } from '../utils';
 import { URLSearchParams } from 'url';
 import { Logger } from './logger.service';
 
 @Mixin([AsyncStatus])
 export class SpeedrunCom implements AsyncStatus {
-    eventNames: () => (string | symbol)[];
     on:     (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     once:   (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     off:    (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
@@ -21,7 +20,7 @@ export class SpeedrunCom implements AsyncStatus {
     isBusy: boolean;
     failed: boolean;
 
-    private _game: Game;
+    private _game: Resource.Game;
     constructor(private gid: string) {
         this.init();
     }
@@ -38,10 +37,10 @@ export class SpeedrunCom implements AsyncStatus {
             res => res.pipe(sstream)
                 .once('finish', () => {
                     if(res.statusCode === 200) {
-                        this._game = new Game(sstream.obj.data);
+                        this._game = sstream.obj.data;
                         this.ready();
                     } else {
-                        this.error(new ResourceNotFoundError(Game.name));
+                        this.error(new ResourceNotFoundError('Game'));
                     }
                 })
                 .once('error', (err) => {
@@ -49,12 +48,12 @@ export class SpeedrunCom implements AsyncStatus {
                 }));
     }
 
-    getCategory(name: string): Category {
-        return this._game.getCategory(name);
+    getCategory(name: string): Resource.Category {
+        return this._game.categories.data.find(c => c.name === name);
     }
 
-    getLevel(name: string): Level {
-        return this._game.getLevel(name);
+    getLevel(name: string): Resource.Level {
+        return this._game.levels.data.find(lvl => lvl.name === name);
     }
 
     // private sendRequest(options: IRequest, cb: NodeCallback<Error, any>) {
