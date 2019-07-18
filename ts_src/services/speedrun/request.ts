@@ -6,54 +6,37 @@ export class SrRequest implements IRequest {
     path = '/api/v1';
     headers = {
         "Content-Type":"application/json",
-        "User-Agent":"INEPT_bot/0.1.a"
+        "User-Agent":"INEPT_bot/0.1.a",
     };
     method?: string;
 
-    constructor(method: string, path: Route, query: URLSearchParams) {
-        this.path += path.toString();
-        this.path += query.toString();
+    constructor(method: string, path: string, query: string) {
+        this.path += path + query;
         this.method = method.toUpperCase();
     }
-}
 
-export class Route {
-    private path: string;
-    constructor(path: string) {
-        this.path = path;
-    }
-    toString() {
-        return this.path;
-    }
-    setId(idType: string, idVal: string) {
-        this.path = this.path.replace(':' + idType, idVal);
-        return this;
-    }
-    setIds(...params: string[][]) {
-        for(let [t, v] of params) {
-            this.path = this.path.replace(':' + t, v);
-        }
-        return this;
+    setHeader(hname: string, value: string) {
+        this.headers[hname] = value;
     }
 }
 
-export const SRCAPI = {
-    NOTIFY:     new Route('/notifications'),
-    ALL_USERS:  new Route('/users'),
-    ALL_GAMES:  new Route('/games'),
-    ALL_RUNS:   new Route('/runs'),
-    ALL_CATS:   new Route('/categories'),
-    ALL_SERIES: new Route('/series'),
-    USER:       new Route('/users/:uid'),
-    RUN:        new Route('/runs/:rid'),
-    VARIABLE:   new Route('/variables/:vid'),
-    LEVEL:      new Route('/levels/:lid'),
-    CATEGORY:   new Route('/categories/:cid'),
-    GAME:       new Route('/games/:gid'),
-    SERIES:     new Route('/series/:sid'),
-    CAT_VARS:   new Route('/categories/:cid/variables'),
-    LVL_VARS:   new Route('/levels/:lid/variables'),
-    GAME_VARS:  new Route('/games/:gid/variables'),
-    CAT_LEADER: new Route('/leaderboards/:gid/category/:cid'),
-    LVL_LEADER: new Route('/leaderboards/:gid/level/:lid/:cid'),
+export enum SRCAPI {
+    NOTIFY =     '/notifications',
+    ALL_USERS =  '/users',
+    ALL_GAMES =  '/games',
+    ALL_RUNS =   '/runs',
+    ALL_CATS =   '/categories',
+    ALL_SERIES = '/series',
+    USER =       '/users/:uid',
+    RUN =        '/runs/:rid',
+    VARIABLE =   '/variables/:vid',
+    LEVEL =      '/levels/:lid',
+    CATEGORY =   '/categories/:cid',
+    GAME =       '/games/:gid',
+    SERIES =     '/series/:sid',
+    CAT_VARS =   '/categories/:cid/variables',
+    LVL_VARS =   '/levels/:lid/variables',
+    GAME_VARS =  '/games/:gid/variables',
+    CAT_LEADER = '/leaderboards/:gid/category/:cid',
+    LVL_LEADER = '/leaderboards/:gid/level/:lid/:cid',
 }
