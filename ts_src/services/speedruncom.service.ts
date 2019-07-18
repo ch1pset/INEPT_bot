@@ -63,19 +63,23 @@ export class SpeedrunCom implements AsyncStatus {
         return this._game.levels.data.find(lvl => lvl.name === name);
     }
 
-    getCatVariable(category: string, name: string, valName: string): [string, string] {
-        const variable = this.getCategory(category)
-            .variables.data.find(variable => variable.name === name);
-        const value = Object.keys(variable.values.values)
-            .find(id => variable.values.values[id].label === valName);
-        return [variable.id, value];
-    }
+    getVariable({category, level, varName, valName}: {category?: string, level?: string, varName: string, valName: string}): [string, string] {
+        var variable: Resource.Variable;
 
-    getLevelVariable(level: string, name: string, valName: string): [string, string] {
-        const variable = this.getLevel(level)
-            .variables.data.find(variable => variable.name === name);
-        const value = Object.keys(variable.values.values)
-            .find(id => variable.values.values[id].label === valName);
+        if(category) {
+            variable = this.getCategory(category)
+                .variables.data.find(v => v.name === varName);
+        } else if(level) {
+            variable = this.getLevel(level)
+                .variables.data.find(v => v.name === varName);
+        } else {
+            variable = this._game.variables.data.find(v => v.name === varName);
+        }
+
+        const values = variable.values.values;
+        const value = Object.keys(values)
+            .find(id => values[id].label === valName);
+
         return [variable.id, value];
     }
 
@@ -87,7 +91,10 @@ export class SpeedrunCom implements AsyncStatus {
 const ylsrService = new SpeedrunCom('yl', Logger.default);
 ylsrService.once('ready', () => {
     const category = ylsrService.getCategory('Any%').id;
-    const [variable, value] = ylsrService.getCatVariable('Any%', 'Platform Route', 'Console');
+    const [variable, value] = ylsrService.getVariable({
+        category:   'Any%',
+        varName:    'Platform Route',
+        valName:    'Console'});
 
     const path = SRCAPI.CAT_LEADER
         .replace(/:gid/, ylsrService.id)
