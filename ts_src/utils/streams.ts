@@ -1,8 +1,18 @@
 import { Writable, Duplex } from "stream";
 import { Callback } from "./typedefs";
 import { TextChannel } from "discord.js";
+import { AsyncStatus, Status } from "./asyncstat";
+import { Mixin } from "./decorators";
 
-export class StringStream extends Duplex {
+@Mixin([AsyncStatus])
+export class StringStream extends Duplex implements AsyncStatus {
+    status: Status;
+    ready: () => Status;
+    busy: () => Status;
+    error: (err: Error) => Status;
+    isReady: boolean;
+    isBusy: boolean;
+    failed: boolean;
     private _data: string = '';
     get data() {
         return this._data.slice();
