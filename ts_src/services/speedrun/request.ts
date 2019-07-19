@@ -1,5 +1,15 @@
-import { URLSearchParams } from 'url';
+import * as https from 'https';
+import { OutgoingHttpHeaders } from 'http';
 import { IRequest } from "../../utils/rest";
+import { StringStream } from '../../utils';
+
+type RequestParams = {
+    method: string,
+    path: string,
+    query: string,
+    request?: SrRequest,
+    headers?: OutgoingHttpHeaders,
+};
 
 export class SrRequest implements IRequest {
     hostname = "www.speedrun.com";
@@ -10,13 +20,35 @@ export class SrRequest implements IRequest {
     };
     method?: string;
 
-    constructor(method: string, path: string, query: string) {
+    constructor({method, path, query}: RequestParams) {
         this.path += path + query;
         this.method = method.toUpperCase();
     }
 
-    setHeader(hname: string, value: string) {
-        this.headers[hname] = value;
+    setHeaders(headers?: OutgoingHttpHeaders) {
+        if(headers) 
+            Object.assign(this.headers, headers);
+        return this;
+    }
+
+    static send({request, method, path, query, headers}: RequestParams) {
+        const options = request ? 
+            request.setHeaders(headers) 
+            : new SrRequest({method, path, query});
+        const sstream = new StringStream();
+        sstream.busy();
+        https.request(
+            options,
+            res => res.pipe(sstream)
+                .once('finish', () => {
+                    if(res.statusCode === 200) {
+                        sstream.ready();
+                    } else {
+                        sstream.error(new Error(res.statusMessage));
+                    }
+                }))
+        .end();
+        return sstream;
     }
 }
 

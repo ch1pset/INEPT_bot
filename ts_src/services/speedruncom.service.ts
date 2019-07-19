@@ -29,26 +29,18 @@ export class SpeedrunCom implements AsyncStatus {
 
     private init() {
         this.busy();
-        const sstream = new StringStream();
-        const req = https.request(
-            new SrRequest('GET', 
-                SRCAPI.ALL_GAMES, 
-                Query.generate([
-                    ['abbreviation', this.abbreviation],
-                    ['embed','levels.variables,categories.variables'],
-                ])),
-            res => res.pipe(sstream)
-                .once('finish', () => {
-                    this._game = sstream.obj.data[0];
-                    if(res.statusCode === 200 && this._game)
-                        this.ready();
-                        
-                    else this.error(new ResourceNotFoundError('Game'));
-                })
-                .once('error', (err) => {
-                    this.error(err);
-                }));
-        req.end();
+        const sstream = SrRequest.send({
+            method: 'GET',
+            path: SRCAPI.ALL_GAMES,
+            query: Query.generate([
+                ['abbreviation', this.abbreviation],
+                ['embed', 'levels.variables,categories.variables'],
+            ])})
+        .once('ready', () => {
+            this._game = sstream.obj.data[0];
+            if(this._game) this.ready();
+            else this.error(new ResourceNotFoundError('Game'))})
+        .once('error', (err) => this.error(err));
     }
 
     get id() {
@@ -64,7 +56,7 @@ export class SpeedrunCom implements AsyncStatus {
     }
 
     getVariable({category, level, varName, valName}: {category?: string, level?: string, varName: string, valName: string}): [string, string] {
-        var variable: Resource.Variable;
+        let variable: Resource.Variable;
 
         if(category) {
             variable = this.getCategory(category)
@@ -96,22 +88,16 @@ ylsrService.once('ready', () => {
         varName:    'Platform Route',
         valName:    'Console'});
 
-    const path = SRCAPI.CAT_LEADER
-        .replace(/:gid/, ylsrService.id)
-        .replace(/:cid/, category);
-        
-    const sstream = new StringStream();
-    const req = https.request(
-        new SrRequest(
-            'GET',
-            path,
-            Query.generate([
+    const sstream = SrRequest.send({
+        method: 'GET',
+        path: SRCAPI.CAT_LEADER
+            .replace(/:gid/, ylsrService.id)
+            .replace(/:cid/, category),
+        query: Query.generate([
                 ['top', '1'],
-                [`var-${variable}`, value]
-            ])),
-        res => res.pipe(sstream));
-    req.end();
-
+                ['var-' + variable, value]
+            ])
+    });
 
     sstream.once('finish', () => {
         const leaderboard: Resource.Leaderboard = sstream.obj.data;
