@@ -1,12 +1,12 @@
 import * as https from 'https';
 import { OutgoingHttpHeaders } from 'http';
-import { IRequest } from "../../utils/rest";
+import { IRequest, Query } from "../../utils/rest";
 import { StringStream } from '../../utils';
 
 type RequestParams = {
-    method: string,
+    method?: string,
     path: string,
-    query: string,
+    query?: string,
     request?: SrRequest,
     headers?: OutgoingHttpHeaders,
 };
@@ -29,6 +29,15 @@ export class SrRequest implements IRequest {
         if(headers) 
             Object.assign(this.headers, headers);
         return this;
+    }
+
+    static game(abbr: string) {
+        return new SrRequest({
+            path: SRCAPI.ALL_GAMES, 
+            query: Query.generate([
+                ['abbreviation', abbr],
+                ['embed', 'levels.variables,categories.variables'],
+            ])});
     }
 
     static send({request, method, path, query, headers}: RequestParams) {

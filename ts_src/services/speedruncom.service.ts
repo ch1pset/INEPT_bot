@@ -4,6 +4,7 @@ import * as Resource from './speedrun';
 import { StringStream, AsyncStatus, Mixin, Status, Callback, ResourceNotFoundError, Query } from '../utils';
 import { URLSearchParams } from 'url';
 import { Logger } from './logger.service';
+import { HttpsRequest } from './http.service';
 
 @Mixin([AsyncStatus])
 export class SpeedrunCom implements AsyncStatus {
@@ -20,27 +21,19 @@ export class SpeedrunCom implements AsyncStatus {
     failed: boolean;
 
     private _game: Resource.Game;
-    constructor(
-        private abbreviation: string,
+    constructor(abbreviation: string,
+        private httpService: HttpsRequest,
         private logger: Logger) {
         console.log('Initializing SrCom Service...');
-        this.init();
-    }
-
-    private init() {
         this.busy();
-        const sstream = SrRequest.send({
-            method: 'GET',
-            path: SRCAPI.ALL_GAMES,
-            query: Query.generate([
-                ['abbreviation', this.abbreviation],
-                ['embed', 'levels.variables,categories.variables'],
-            ])})
-        .once('ready', () => {
-            this._game = sstream.obj.data[0];
-            if(this._game) this.ready();
-            else this.error(new ResourceNotFoundError('Game'))})
-        .once('error', (err) => this.error(err));
+        this.httpService.get({
+            reqOptions: SrRequest.game(abbreviation),
+            success: (game: Resource.Game) => {
+                this._game = game
+                this.ready()
+            },
+            error: err => this.error(new ResourceNotFoundError('Game'))
+        });
     }
 
     get id() {
@@ -80,7 +73,7 @@ export class SpeedrunCom implements AsyncStatus {
     }
 }
 
-const ylsrService = new SpeedrunCom('yl', Logger.default);
+const ylsrService = new SpeedrunCom('yl', HttpsRequest.default, Logger.default);
 ylsrService.once('ready', () => {
     const category = ylsrService.getCategory('Any%').id;
     const [variable, value] = ylsrService.getVariable({
