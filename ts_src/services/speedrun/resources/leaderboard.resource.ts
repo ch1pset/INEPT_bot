@@ -1,5 +1,4 @@
-import { Run } from "./run.resource";
-import { Links } from "./links.resource";
+import { Run, Links } from '.';
 
 export interface Leaderboard {
     weblink:                string;
