@@ -8,7 +8,7 @@ export interface Run {
     category:               string;
     videos:                 {text?: string, links: Links[]}
     comment:                string;
-    status:                 Status;
+    status:                 RunStatus;
     players:                Player[];
     date:                   string;
     submitted:              string;
@@ -42,8 +42,15 @@ export interface Player {
     uri:                    string;
 }
 
-export interface Status {
+export interface RunStatus {
     status:                 string;
     examiner:               string;
     'verify-date':          string;
+}
+
+export interface VerifyStatus {
+    status: {
+        status:             string;
+        reason:             string;
+    }
 }

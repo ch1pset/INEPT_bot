@@ -11,7 +11,7 @@ export interface Leaderboard {
     'video-only':           boolean;
     timing:                 string;
     values:                 {[id: string]: string};
-    runs:                   {place: number, run: Run[]}[];
+    runs:                   {place: number, run: Run}[];
     links:                  Links[];
 }
 
