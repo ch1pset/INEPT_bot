@@ -1,5 +1,8 @@
-import { AsyncTaskQueue, Status, Task } from "../utils";
+
 import { Logger } from "./logger.service";
+import { AsyncTaskQueue } from "../utils/asynctaskqueue";
+import { Task } from "../utils/task";
+import { Status } from "../utils/asyncstat";
 
 export class Tasker {
     private _tasks = new AsyncTaskQueue(2000);

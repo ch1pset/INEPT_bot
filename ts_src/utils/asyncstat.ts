@@ -1,5 +1,5 @@
 import { Mixin } from "./decorators";
-import { Callback } from ".";
+import { Callback } from "./typedefs";
 import { SimpleEventEmitter } from "./simple.events";
 
 
@@ -19,8 +19,8 @@ export class AsyncStatus implements SimpleEventEmitter {
     emit:   (event:  Status | status_str, ...args: any[]) => boolean;
 
     status: Status = Status.NULL;
-    ready() {
-        this.emit(Status.READY);
+    ready(...args: any[]) {
+        this.emit(Status.READY, ...args);
         return this.status = Status.READY;
     }
     busy() {

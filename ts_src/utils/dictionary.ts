@@ -12,9 +12,9 @@ export class Dictionary<T> implements AsyncStatus {
     emit: (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
 
     status: Status;
-    ready: () => Status;
+    ready: (...args: any[]) => Status;
     busy: () => Status;
-    error: () => Status;
+    error: (err: Error) => Status;
     isReady: boolean;
     isBusy: boolean;
     failed: boolean;
@@ -88,7 +88,7 @@ export class Dictionary<T> implements AsyncStatus {
                     this.ready();
                     cb(null, this);
                 } else {
-                    this.error();
+                    this.error(err);
                     cb(err, null);
                 }
             });
@@ -106,7 +106,7 @@ export class Dictionary<T> implements AsyncStatus {
                     this.ready();
                     cb(null, this);
                 } else {
-                    this.error();
+                    this.error(err);
                     cb(err, null);
                 }});
     }

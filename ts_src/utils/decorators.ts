@@ -1,5 +1,4 @@
 import { Decorator, fn, bool, NodeCallback, Constructor } from "./typedefs";
-import { Logger } from "../services";
 import { RUN, MODE } from "../config";
 
 /**
@@ -53,11 +52,11 @@ export function TryCatch(options?: { nolog?: bool, callback?: NodeCallback<Error
     }
 }
 
-export function Mixin(mixins?: fn[]): fn {
+export function Mixin(mixins: fn[]): fn {
     return function(ctor: fn) {
         if(mixins) {
             mixins.forEach(mixin => {
-                Logger.default.info(`Applying mixin ${mixin.name} to ${ctor.name}...`);
+                console.log(`Applying mixin ${mixin.name} to ${ctor.name}...`);
                 const proto = Object.getOwnPropertyDescriptors(mixin.prototype);
                 for(let name in proto) {
                     Object.defineProperty(ctor.prototype, name, proto[name]);
