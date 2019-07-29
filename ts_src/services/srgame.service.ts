@@ -27,6 +27,26 @@ export class SrGameManager implements AsyncStatus {
         this.getGame(abbr);
     }
 
+    private getGame(abbr: string) {
+        this.busy();
+        this.logger.info(`Loading ${abbr}...`);
+        this.httpService.get({
+            request: Srcom.request({
+                path: Srcom.api.GAMES,
+                query: createQuery([
+                    ['abbreviation', abbr],
+                    ['embed', 'categories.variables,levels.veriables,variables']
+                ])
+            }),
+            success: (games: {data: Srcom.Resource.Game[]}) => {
+                this.logger.info(`Successfully loaded ${abbr}.`);
+                this._game = games.data[0];
+                this.ready();
+            },
+            error: (err) => this.error(err)
+        });
+    }
+
     public getLeaderboard({category, level, top, platform}: {
         category?: string,
         level?: string,
@@ -48,26 +68,6 @@ export class SrGameManager implements AsyncStatus {
             error: err => this.error(err)
         });
         return this;
-    }
-
-    private getGame(abbr: string) {
-        this.busy();
-        this.logger.info(`Loading ${abbr}...`);
-        this.httpService.get({
-            request: Srcom.request({
-                path: Srcom.api.GAMES,
-                query: createQuery([
-                    ['abbreviation', abbr],
-                    ['embed', 'categories.variables,levels.veriables']
-                ])
-            }),
-            success: (games: {data: Srcom.Resource.Game[]}) => {
-                this.logger.info(`Successfully loaded ${abbr}.`);
-                this._game = games.data[0];
-                this.ready();
-            },
-            error: (err) => this.error(err)
-        });
     }
 
     private getLink({category, level, rel}: {
