@@ -1,0 +1,42 @@
+{
+    "any%": {
+        "name": "Any%",
+        "alias": [
+            "any",
+            "any%"
+        ]
+    },
+    "any% w/ flight": {
+        "name": "Any% w/ Flight",
+        "alias": [
+            "awf",
+            "anywf",
+            "anyw/f",
+            "anyw/flight",
+            "any%wf",
+            "any%w/f",
+            "any%w/flight",
+            "any%withflight"
+        ]
+    },
+    "100 pagies": {
+        "name": "100 Pagies",
+        "alias": [
+            "100pagies",
+            "100pg"
+        ]
+    },
+    "100%": {
+        "name": "100%",
+        "alias": [
+            "100%"
+        ]
+    },
+    "all bosses": {
+        "name": "All Bosses",
+        "alias": [
+            "ab",
+            "allbosses"
+        ]
+    }
+}
