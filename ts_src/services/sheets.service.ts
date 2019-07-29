@@ -2,8 +2,10 @@ import { sheets } from '../../config.json';
 import * as https from 'https';
 import { GRequest } from './sheets/api'
 import { Link } from '../bot/modules';
-import { NodeCallback } from '../utils/typedefs.js';
+import { Mixin } from '../utils/decorators.js';
 import { StringStream } from '../utils/streams.js';
+import { NodeCallback, Callback } from '../utils/typedefs.js';
+import { AsyncStatus, Status } from '../utils/asyncstat.js';
 
 type guide = [string, string, string, string, string, string];
 
