@@ -1,4 +1,5 @@
-import { Mixin, Callback } from ".";
+import { Mixin } from "./decorators";
+import { Callback } from "./typedefs";
 import { EventEmitter } from "events";
 
 
@@ -8,5 +9,4 @@ export class SimpleEventEmitter {
     once: (event: string | symbol, listener: Callback<void>) => this;
     off: (event: string | symbol, listener: Callback<void>) => this;
     emit: (event: string | symbol, ...args: any[]) => boolean;
-    eventNames: () => (string | symbol)[];
 }

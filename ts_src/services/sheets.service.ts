@@ -1,8 +1,9 @@
 import { sheets } from '../../config.json';
 import * as https from 'https';
 import { GRequest } from './sheets/api'
-import { StringStream, NodeCallback } from '../utils';
 import { Link } from '../bot/modules';
+import { NodeCallback } from '../utils/typedefs.js';
+import { StringStream } from '../utils/streams.js';
 
 export class Sheets {
     static getSheet([name, range]: [string, string], cb?: NodeCallback<Error, string[][]>) {

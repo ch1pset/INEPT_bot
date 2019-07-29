@@ -1,6 +1,5 @@
 /node_modules
 /tscompiled
-/config
 /test
 /.vscode
 auth.json
