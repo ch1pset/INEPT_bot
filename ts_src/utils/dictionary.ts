@@ -19,50 +19,52 @@ export class Dictionary<T> implements AsyncStatus {
     isBusy: boolean;
     failed: boolean;
 
+    private _data = {};
+
     get array(): T[] {
         const arr = [];
-        for(let key in this) {
-            arr.push(this[key]);
+        for(let key in this._data) {
+            arr.push(this._data[key]);
         }
         return arr;
     }
     get size(): number {
-        return Object.keys(this).length;
+        return Object.keys(this._data).length;
     }
     keys(): string[] {
         const karr = [];
-        for(let key in this) {
+        for(let key in this._data) {
             karr.push(key);
         }
         return karr;
     }
     values(): T[] {
         const tarr = [];
-        for(let t in this) {
+        for(let t in this._data) {
             tarr.push(t);
         }
         return tarr;
     }
     set(key: string, value: T): void {
-        this[key.toLowerCase()] = value;
+        this._data[key.toLowerCase()] = value;
     }
     get(key: string): T {
-        return this[key.toLowerCase()];
+        return this._data[key.toLowerCase()];
     }
     has(key: string): bool {
-        return this[key.toLowerCase()] || false;
+        return this._data[key.toLowerCase()] || false;
     }
     delete(key: string): bool {
-        this[key.toLowerCase()] = undefined;
+        this._data[key.toLowerCase()] = undefined;
         return delete this[key.toLowerCase()];
     }
     forEach(cb: Callback<void>): void {
-        for(let key in this) {
+        for(let key in this._data) {
             cb(this.get(key), key);
         }
     }
     find(cb: Callback<boolean>): T {
-        for(let key in this) {
+        for(let key in this._data) {
             if(cb(this.get(key), key))
                 return this.get(key);
         }
@@ -70,7 +72,7 @@ export class Dictionary<T> implements AsyncStatus {
     }
     map(cb: Callback<any>): any[] {
         const arr = [];
-        for(let key in this) {
+        for(let key in this._data) {
             arr.push(cb(this.get(key), key));
         }
         return arr;
@@ -80,9 +82,7 @@ export class Dictionary<T> implements AsyncStatus {
         this.busy();
         fs.writeFile(
             fname,
-            JSON.stringify(this,
-                (key, val)=> key === 'status' || key.startsWith('_') ? undefined : val,
-                 4),
+            JSON.stringify(this._data, null, 4),
             err => {
                 if(!err) {
                     this.ready();
@@ -102,7 +102,7 @@ export class Dictionary<T> implements AsyncStatus {
             (err, data) => {
                 if(!err) {
                     const temp = JSON.parse(data);
-                    Object.assign(this, temp);
+                    Object.assign(this._data, temp);
                     this.ready();
                     cb(null, this);
                 } else {
