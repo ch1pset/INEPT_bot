@@ -1,5 +1,5 @@
-import { Mixin } from './decorators';
-import { str, Callback } from './typedefs';
+import { Mixin } from '../decorators';
+import { str, Callback } from '../typedefs';
 import { SimpleEventEmitter } from './simple.events';
 
 @Mixin([SimpleEventEmitter])

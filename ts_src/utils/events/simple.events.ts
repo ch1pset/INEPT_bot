@@ -1,5 +1,5 @@
-import { Mixin } from "./decorators";
-import { Callback } from "./typedefs";
+import { Mixin } from "../decorators";
+import { Callback } from "../typedefs";
 import { EventEmitter } from "events";
 
 

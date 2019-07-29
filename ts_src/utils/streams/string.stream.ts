@@ -1,6 +1,5 @@
-import { Writable, Duplex } from "stream";
-import { Callback } from "./typedefs";
-import { TextChannel } from "discord.js";
+import { Duplex } from "stream";
+import { Callback } from "../typedefs";
 
 export class StringStream extends Duplex {
     private _data: string = '';
@@ -19,19 +18,5 @@ export class StringStream extends Duplex {
     _read(size?: number) {
         if(this._data.length >= size)
             this.push(Buffer.from(this._data));
-    }
-}
-
-export class ChannelStream extends Writable {
-    private _ch: TextChannel;
-    constructor(channel: TextChannel) {
-        super();
-        this._ch = channel;
-    }
-    _write(chunk: Buffer | string, encoding: string, callback: Callback<any>) {
-        if(Buffer.isBuffer(chunk))
-            chunk = chunk.toString();
-        this._ch.send(chunk);
-        callback();
     }
 }

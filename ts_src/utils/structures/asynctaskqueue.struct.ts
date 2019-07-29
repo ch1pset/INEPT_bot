@@ -1,7 +1,6 @@
-import { Callback } from "./typedefs";
-import { AsyncStatus, Status } from "./asyncstat";
-import { Mixin } from "./decorators";
-import { Task } from "./task";
+import { Callback } from "../typedefs";
+import { AsyncStatus, Status, Task } from "../events";
+import { Mixin } from "../decorators";
 
  @Mixin([AsyncStatus])
 export class AsyncTaskQueue implements AsyncStatus {
