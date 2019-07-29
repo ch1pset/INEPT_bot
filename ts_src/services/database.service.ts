@@ -1,6 +1,9 @@
 import { Permissions as Perms } from 'discord.js';
-import { Dictionary, Status, str, bool, Task } from "../utils";
 import { Logger, Tasker } from '.';
+import { Dictionary } from '../utils/dictionary';
+import { str, bool } from '../utils/typedefs';
+import { Status } from '../utils/asyncstat';
+import { Task } from '../utils/task';
 const PERMISSION = Perms.FLAGS;
 
 export class DbManager<T> {
@@ -63,7 +66,7 @@ export class DbManager<T> {
                 this._db.ready();
                 this.logger.info('Write successful.');
             } else {
-                this._db.error();
+                this._db.error(err);
                 this.logger.warn('Write failed.');
             }
             });

@@ -1,7 +1,9 @@
 import { sheets } from '../../config.json';
 import * as https from 'https';
 import { GRequest } from './sheets/api'
-import { StringStream, NodeCallback, AsyncStatus, Status, Callback, Mixin } from '../utils';
+import { Link } from '../bot/modules';
+import { NodeCallback } from '../utils/typedefs.js';
+import { StringStream } from '../utils/streams.js';
 
 type guide = [string, string, string, string, string, string];
 

@@ -1,6 +1,6 @@
 import { Permissions } from 'discord.js';
-import { str } from "../../utils";
-import { UserData, ChannelData } from "../../discord";
+import { str } from "../utils/typedefs";
+import { UserData, ChannelData } from ".";
 
 export class AccessRestrictions {
     roles: str[];
