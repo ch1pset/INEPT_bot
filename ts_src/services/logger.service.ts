@@ -1,5 +1,5 @@
 import { Console } from 'console';
-import { str, bool } from "../utils";
+import { str, bool } from "../utils/typedefs";
 import { Writable } from 'stream';
 
 enum LogLevel {

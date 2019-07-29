@@ -2,8 +2,8 @@ import { Message } from 'discord.js';
 import { UserArgs, ChannelData } from "../../discord";
 import { DbManager, Responder, Logger } from '../../services';
 import { UserData } from "../../discord";
-import { str } from "../../utils";
-import { AccessRestrictions } from "./restricted.module";
+import { str } from "../../utils/typedefs";
+import { AccessRestrictions } from "../../discord";
 
 export class Link {
     name: string;

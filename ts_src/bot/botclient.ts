@@ -1,7 +1,10 @@
 import { Client, Message, Channel, TextChannel, Snowflake, Collection, GuildChannel } from 'discord.js';
 import { UserArgs } from '../discord';
-import { Subscriber, Mixin, Callback, str, ChannelStream, Dictionary, fn  } from '../utils';
 import { Logger, Responder } from '../services';
+import { Mixin } from '../utils/decorators';
+import { Subscriber } from '../utils/subscriber';
+import { str, Callback } from '../utils/typedefs';
+import { ChannelStream } from '../utils/streams';
 
 @Mixin([Subscriber])
 export class BotClient extends Client implements Subscriber
