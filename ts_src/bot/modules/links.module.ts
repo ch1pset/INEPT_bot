@@ -3,7 +3,7 @@ import { UserArgs, ChannelData } from "../../discord";
 import { DbManager, Responder, Logger } from '../../services';
 import { UserData } from "../../discord";
 import { str } from "../../utils/typedefs";
-import { AccessRestrictions } from "./restricted.module";
+import { AccessRestrictions } from "../../discord";
 
 export class Link {
     name: string;
