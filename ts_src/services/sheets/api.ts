@@ -1,6 +1,6 @@
 import { api } from '../../../config.json';
 import { URLSearchParams } from 'url';
-import { IRequest } from '../../utils/rest';
+import { IRequest } from '../../utils/http/rest';
 
 export class GRequest implements IRequest {
     hostname = 'sheets.googleapis.com';

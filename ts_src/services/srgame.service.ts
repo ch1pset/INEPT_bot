@@ -1,8 +1,8 @@
 import { Mixin } from '../utils/decorators';
 import { Logger, HttpsRequest, Srcom } from '.';
-import { AsyncStatus, Status } from '../utils/asyncstat';
+import { AsyncStatus, Status } from '../utils/events';
 import { Callback } from '../utils/typedefs';
-import { createQuery } from '../utils/rest';
+import { createQuery } from '../utils/http/rest';
 
 
 @Mixin([AsyncStatus])

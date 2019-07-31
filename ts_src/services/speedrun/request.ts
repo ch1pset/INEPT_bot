@@ -1,4 +1,4 @@
-import { IRequest } from "../../utils/rest";
+import { IRequest } from "../../utils/http/rest";
 
 export type SrRequestParams = {path: string, method?: string, query?: string};
 
