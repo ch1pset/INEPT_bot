@@ -1,6 +1,6 @@
 import * as https from 'https';
 import { Logger } from '.';
-import { IRequest } from '../utils/rest';
+import { IRequest } from '../utils/http/rest';
 import { Callback } from '../utils/typedefs';
 import { StringStream } from '../utils/streams';
 

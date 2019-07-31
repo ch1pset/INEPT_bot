@@ -1,9 +1,8 @@
 import { Permissions as Perms } from 'discord.js';
 import { Logger, Tasker } from '.';
-import { Dictionary } from '../utils/dictionary';
+import { Dictionary } from '../utils/structures';
 import { str, bool } from '../utils/typedefs';
-import { Status } from '../utils/asyncstat';
-import { Task } from '../utils/task';
+import { Status, Task } from '../utils/events';
 const PERMISSION = Perms.FLAGS;
 
 export class DbManager<T> {

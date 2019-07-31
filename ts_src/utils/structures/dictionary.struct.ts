@@ -1,8 +1,8 @@
 import * as fs from 'fs';
-import { Callback, NodeCallback, bool } from './typedefs';
-import { Mixin } from './decorators';
-import { AsyncStatus, Status } from './asyncstat';
-import { Logger } from '../services';
+import { Callback, NodeCallback, bool } from '../typedefs';
+import { Mixin } from '../decorators';
+import { AsyncStatus, Status } from '../events';
+import { Logger } from '../../services';
 
 @Mixin([AsyncStatus])
 export class Dictionary<T> implements AsyncStatus {

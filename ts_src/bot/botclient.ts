@@ -2,7 +2,7 @@ import { Client, Message, Channel, TextChannel, Snowflake, Collection, GuildChan
 import { UserArgs } from '../discord';
 import { Logger, Responder } from '../services';
 import { Mixin } from '../utils/decorators';
-import { Subscriber } from '../utils/subscriber';
+import { Subscriber } from '../utils/events';
 import { str, Callback } from '../utils/typedefs';
 import { ChannelStream } from '../utils/streams';
 
