@@ -1,5 +1,5 @@
 import { sheets } from '../../config.json';
-import * as Sheets from './sheets/api'
+import * as Sheets from './sheets/request'
 import { Mixin } from '../utils/decorators';
 import { Callback } from '../utils/typedefs';
 import { AsyncStatus, Status } from '../utils/events';
