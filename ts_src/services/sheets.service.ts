@@ -1,78 +1,57 @@
 import { sheets } from '../../config.json';
-import * as https from 'https';
-import { GRequest } from './sheets/api'
-import { Link } from '../bot/modules';
-import { NodeCallback } from '../utils/typedefs';
-import { StringStream } from '../utils/streams';
-
-type guide = [string, string, string, string, string, string];
+import * as Sheets from './sheets/api'
+import { Mixin } from '../utils/decorators';
+import { Callback } from '../utils/typedefs';
+import { AsyncStatus, Status } from '../utils/events';
+import { HttpsRequest } from './http.service';
+import { Logger } from './logger.service';
 
 @Mixin([AsyncStatus])
 export class Sheet<T> implements AsyncStatus {
-    eventNames: () => (string | symbol)[];
     on:     (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     once:   (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     off:    (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     emit:   (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
     status:  Status;
-    ready: () => Status;
-    busy: () => Status;
-    error: (err: Error) => Status;
+    ready: (values: T[]) => this;
+    busy: () => this;
+    error: (err: Error) => this;
     isReady: boolean;
     isBusy: boolean;
     failed: boolean;
 
-    private _data: T[][];
+    private _data: T[];
 
     constructor(
-        private id: string,
-        private range: string
-    ) { }
+        private httpService: HttpsRequest,
+        private logger: Logger) { }
 
-    get(cb?: NodeCallback<Error, T[][]>) {
+    loadSheet(id: string, range: string) {
         this.busy();
-        const options = new GRequest(this.id, this.range);
-        const sstream = new StringStream();
-        const req = https.request(
-            options,
-            res => res.pipe(sstream)
-                .on('finish', () => {
-                    if(res.statusCode === 200) {
-                        this.ready();
-                        cb(null, JSON.parse(sstream.data).values)
-                    } else {
-                        const err = new Error(`Sheet not found!`);
-                        this.error(err);
-                        cb(err);
-                    }
-                })
-                .on('error', e => {
-                    this.error(e);
-                    cb(e)
-                }));
-        req.end();
+        this.httpService.get({
+            request: Sheets.request({sheet: [id, range]}),
+            success: (data: {values: T[]}) => {
+                this._data = data.values.slice(1);
+                this.ready(this._data);
+            },
+            error: () => this.error(new Error('Sheet not found!'))
+        });
         return this;
     }
     
-    search(cb: (value: T[]) => T[][]) {
-        this.once('ready', () => {
-            const results = this._data.filter(row => {
-                return cb(row)
-            })
-        })
+    search(cb: (value: T) => boolean) {
+        return this._data.filter(row => cb(row));
+    }
+
+    fetch(cb: (value: T) => T) {
+        return this._data.find(row => cb(row));
     }
 }
 
-// const Guides = new Sheet<guide>(sheets.guides, 'A:F');
-// Guides.get(
-//     (err, values) => {
-//         if(!err) {
-//             console.log(values.slice(1));
-//             values.slice(1).forEach(([name, url, op, date, diff, cat]) => {
+// type guide = string[];
 
-//             })
-//         } else {
-//             console.log(err);
-//         }
-//     }
-// )
+// const Guides = new Sheet<guide>(HttpsRequest.default, Logger.default);
+// Guides.loadSheet(sheets.guides, 'A:F')
+// .once('ready', () => {
+//     console.log(Guides.search(([name, url, op, date, diff, cats]) => cats.split(',').some(c => c === 'W/Flight')));
+// })

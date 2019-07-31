@@ -2,17 +2,19 @@ import { api } from '../../../config.json';
 import { URLSearchParams } from 'url';
 import { IRequest } from '../../utils/http/rest';
 
-export class GRequest implements IRequest {
-    hostname = 'sheets.googleapis.com';
-    path = '/v4/spreadsheets';
-    headers: {
-        'Accept': 'application/json'
-    }
-    constructor(id: string, range: string) {
-        const query = new URLSearchParams();
-        query.set('key', api.google.sheets);
-        this.path += '/' + id;
-        this.path += '/values/' + range.replace(':', '%3A');
-        this.path += '?' + query.toString();
+export type SheetsRequestParams = {method?: string, body?: {[name: string]: any}, sheet: [string, string]};
+
+export function request({method, body, sheet:[id, range]}: SheetsRequestParams): IRequest {
+    var route = '/' + id;
+    route += '/values/' + range.replace(':', '%3A');
+    const query = new URLSearchParams([['key', api.google.sheets]]).toString();
+    return {
+        hostname: 'sheets.googleapis.com',
+        path: '/v4/spreadsheets' + route + '?' + query,
+        headers: {
+            'Accept': 'application/json'
+        },
+        method,
+        body: body ? body : {}
     }
 }
