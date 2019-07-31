@@ -12,9 +12,9 @@ export class SrGameManager implements AsyncStatus {
     off:    (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     emit:   (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
     status: Status;
-    ready: (...args: any[]) => Status;
-    busy: () => Status;
-    error: (err: Error) => Status;
+    ready: (...args: any[]) => this;
+    busy: () => this;
+    error: (err: Error) => this;
     isReady: boolean;
     isBusy: boolean;
     failed: boolean;
