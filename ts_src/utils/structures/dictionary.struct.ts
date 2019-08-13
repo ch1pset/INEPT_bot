@@ -12,9 +12,9 @@ export class Dictionary<T> implements AsyncStatus {
     emit: (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
 
     status: Status;
-    ready: (...args: any[]) => Status;
-    busy: () => Status;
-    error: (err: Error) => Status;
+    ready: (...args: any[]) => this;
+    busy: () => this;
+    error: (err: Error) => this;
     isReady: boolean;
     isBusy: boolean;
     failed: boolean;

@@ -5,9 +5,9 @@ import { Mixin } from "../decorators";
  @Mixin([AsyncStatus])
 export class AsyncTaskQueue implements AsyncStatus {
     status:     Status = Status.NULL;
-    ready:      (...args: any[]) => Status;
-    busy:       () => Status;
-    error:      (err: Error) => Status;
+    ready:      (...args: any[]) => this;
+    busy:       () => this;
+    error:      (err: Error) => this;
     isReady:    boolean;
     isBusy:     boolean;
     failed:     boolean;

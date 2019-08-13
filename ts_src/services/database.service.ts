@@ -9,10 +9,12 @@ export class DbManager<T> {
     private _db = new Dictionary<T>();
     private _fname: str;
 
-    constructor(
+    constructor(fname: str,
         private tasker: Tasker,
         private logger: Logger
-        ) { }
+    ) {
+        this.load(fname);
+    }
 
     public load(fname: str) {
         if(this._db.status !== Status.NULL) {

@@ -7,3 +7,4 @@ export * from './logger.service';
 export * from './tasker.service';
 export * from './http.service';
 export * from './srgame.service';
+export * from './sheets.service';

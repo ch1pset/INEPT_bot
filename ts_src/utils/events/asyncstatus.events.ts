@@ -20,16 +20,19 @@ export class AsyncStatus implements SimpleEventEmitter {
 
     status: Status = Status.NULL;
     ready(...args: any[]) {
+        this.status = Status.READY;
         this.emit(Status.READY, ...args);
-        return this.status = Status.READY;
+        return this;
     }
     busy() {
+        this.status = Status.BUSY;
         this.emit(Status.BUSY);
-        return this.status = Status.BUSY;
+        return this;
     }
     error(err: Error) {
+        this.status = Status.ERROR;
         this.emit(Status.ERROR, err);
-        return this.status = Status.ERROR;
+        return this;
     }
     get isReady() {
         return this.status === Status.READY;

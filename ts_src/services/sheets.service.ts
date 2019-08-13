@@ -1,37 +1,53 @@
-import { sheets } from '../../config.json';
-import * as https from 'https';
-import { GRequest } from './sheets/api'
-import { Link } from '../bot/modules';
-import { NodeCallback } from '../utils/typedefs';
-import { StringStream } from '../utils/streams';
+import * as Sheets from './sheets/request'
+import { Mixin } from '../utils/decorators';
+import { Callback } from '../utils/typedefs';
+import { AsyncStatus, Status } from '../utils/events';
+import { HttpsRequest } from './http.service';
+import { Logger } from './logger.service';
 
-export class Sheets {
-    static getSheet([name, range]: [string, string], cb?: NodeCallback<Error, string[][]>) {
-        const options = new GRequest(sheets[name], range);
-        const sstream = new StringStream();
-        const req = https.request(
-            options,
-            res => res.pipe(sstream)
-                .on('finish', () => {
-                    if(res.statusCode === 200) {
-                        cb(null, JSON.parse(sstream.data).values)
-                    } else cb(new Error(`Sheet not found!`));
-                })
-                .on('error', e => cb(e)));
-        req.end();
+@Mixin([AsyncStatus])
+export class Sheet<T> implements AsyncStatus {
+    on:     (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+    once:   (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+    off:    (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
+    emit:   (event: Status | "ready" | "busy" | "error" | "null", ...args: any[]) => boolean;
+    status:  Status;
+    ready: (values: T[]) => this;
+    busy: () => this;
+    error: (err: Error) => this;
+    isReady: boolean;
+    isBusy: boolean;
+    failed: boolean;
+
+    private _data: T[];
+
+    constructor(
+        private httpService: HttpsRequest,
+        private logger: Logger) { }
+
+    get isLoaded() {
+        return this._data || false;
+    }
+
+    loadSheet(id: string, range: string) {
+        this.busy();
+        this.logger.info(`Loading sheet ${id}...`);
+        this.httpService.get({
+            request: Sheets.request({sheet: [id, range]}),
+            success: (data: {values: T[]}) => {
+                this._data = data.values.slice(1);
+                this.logger.info(`Sheet ${id} loaded!`);
+                this.ready(this._data);
+            },
+            error: () => this.error(new Error('Sheet not found!'))
+        });
+        return this;
+    }
+    search(cb: (value: T) => boolean) {
+        return this._data.filter(row => cb(row));
+    }
+
+    fetch(cb: (value: T) => boolean) {
+        return this._data.find(row => cb(row));
     }
 }
-
-Sheets.getSheet(
-    ['guides', 'A:F'],
-    (err, values) => {
-        if(!err) {
-            console.log(values.slice(1));
-            values.slice(1).forEach(([name, url, op, date, diff, cat]) => {
-                const link = new Link(name, url, op, date);
-            })
-        } else {
-            console.log(err);
-        }
-    }
-)
