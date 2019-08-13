@@ -1,6 +1,6 @@
 import { Mixin } from "../decorators";
 import { Callback } from "../typedefs";
-import { SimpleEventEmitter } from "./simple.events";
+import { SimpleEventEmitter } from "./simple-events";
 
 
 export type status_str = 'ready' | 'busy' | 'error' | 'null';

@@ -1,6 +1,6 @@
 import { Mixin } from '../decorators';
 import { str, Callback } from '../typedefs';
-import { SimpleEventEmitter } from './simple.events';
+import { SimpleEventEmitter } from './simple-events';
 
 @Mixin([SimpleEventEmitter])
 export class Subscriber implements SimpleEventEmitter {
