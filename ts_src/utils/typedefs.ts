@@ -25,4 +25,4 @@ export type Decorator<T> = (target: T, key: PropertyKey, method?: PropertyDescri
 /**
  * Custom types
  */
-export type Command = [string, (args: UserArgs, msg: Message) => void];
+export type Command = [string, (args: UserArgs.Model, msg: Message) => void];
