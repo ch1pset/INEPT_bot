@@ -1,5 +1,5 @@
 
-export * from './ping.module';
-export * from './ylsrcom.module';
-export * from './links.module';
-export * from './guides.module';
+export * from './ping';
+export * from './ylsrcom';
+export * from './links';
+export * from './guides';
