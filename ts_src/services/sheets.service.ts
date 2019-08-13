@@ -1,4 +1,3 @@
-import { sheets } from '../../config.json';
 import * as Sheets from './sheets/request'
 import { Mixin } from '../utils/decorators';
 import { Callback } from '../utils/typedefs';
@@ -26,32 +25,29 @@ export class Sheet<T> implements AsyncStatus {
         private httpService: HttpsRequest,
         private logger: Logger) { }
 
+    get isLoaded() {
+        return this._data || false;
+    }
+
     loadSheet(id: string, range: string) {
         this.busy();
+        this.logger.info(`Loading sheet ${id}...`);
         this.httpService.get({
             request: Sheets.request({sheet: [id, range]}),
             success: (data: {values: T[]}) => {
                 this._data = data.values.slice(1);
+                this.logger.info(`Sheet ${id} loaded!`);
                 this.ready(this._data);
             },
             error: () => this.error(new Error('Sheet not found!'))
         });
         return this;
     }
-    
     search(cb: (value: T) => boolean) {
         return this._data.filter(row => cb(row));
     }
 
-    fetch(cb: (value: T) => T) {
+    fetch(cb: (value: T) => boolean) {
         return this._data.find(row => cb(row));
     }
 }
-
-// type guide = string[];
-
-// const Guides = new Sheet<guide>(HttpsRequest.default, Logger.default);
-// Guides.loadSheet(sheets.guides, 'A:F')
-// .once('ready', () => {
-//     console.log(Guides.search(([name, url, op, date, diff, cats]) => cats.split(',').some(c => c === 'W/Flight')));
-// })
