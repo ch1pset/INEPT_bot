@@ -1,2 +1,2 @@
-export * from './dictionary.struct';
-export * from './asynctaskqueue.struct';
+export * from './dictionary';
+export * from './asynctaskqueue';
