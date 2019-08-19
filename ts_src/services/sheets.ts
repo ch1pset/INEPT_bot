@@ -2,8 +2,8 @@ import * as Sheets from './sheets/request'
 import { Mixin } from '../utils/decorators';
 import { Callback } from '../utils/typedefs';
 import { AsyncStatus, Status } from '../utils/events';
-import { HttpsRequest } from './http.service';
-import { Logger } from './logger.service';
+import { HttpsRequest } from './http';
+import { Logger } from './logger';
 
 @Mixin([AsyncStatus])
 export class Sheet<T> implements AsyncStatus {

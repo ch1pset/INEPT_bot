@@ -1,10 +1,10 @@
 import * as Srcom from './speedrun';
 export { Srcom };
 
-export * from './database.service';
-export * from './responder.service';
-export * from './logger.service';
-export * from './tasker.service';
-export * from './http.service';
-export * from './srgame.service';
-export * from './sheets.service';
+export * from './database';
+export * from './responder';
+export * from './logger';
+export * from './tasker';
+export * from './http';
+export * from './srgame';
+export * from './sheets';

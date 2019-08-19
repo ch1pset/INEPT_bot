@@ -1,5 +1,5 @@
 
-import { Logger } from "./logger.service";
+import { Logger } from "./logger";
 import { AsyncTaskQueue } from "../utils/structures";
 import { Task, Status } from "../utils/events";
 
