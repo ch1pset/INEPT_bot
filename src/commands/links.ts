@@ -1,39 +1,14 @@
 import { Message } from 'discord.js';
-import { UserArgs, ChannelData } from "../../discord";
-import { DbManager, Responder, Logger } from '../../services';
-import { UserData } from "../../discord";
-import { str } from "../../utils/typedefs";
-import { AccessRestrictions } from "../../discord";
-
-export class Link {
-    name: string;
-    url: string;
-    op: string;
-    date: string;
-    constructor(name: str, url: str, op: str, date: str) {
-        this.name = name;
-        this.url = url;
-        this.op = op;
-        this.date = date;
-    }
-    static clone(other: Link) {
-        var copy: Link;
-        if(other) copy = new Link(other.name, other.url, other.op, other.date);
-        return copy;
-    }
-    static curDate() {
-        return (new Date(Date.now())).toISOString().split('T')[0];
-    }
-    toString(): string {
-        return `${this.name} ${this.url}\nPosted by ${this.op} on ${this.date}`;
-    }
-}
+import { UserArgs, UserData, ChannelData, AccessRestrictions } from "../discord";
+import { DbManager, Responder, Logger } from '../services';
+import { Link } from '../utils/structures';
 
 export function Links(
     access:     AccessRestrictions,
     dbService:  DbManager<Link>,
     msgService: Responder,
-    logger:     Logger) {
+    logger:     Logger
+    ) {
         
     this.add = function(args: UserArgs.Model, msg: Message) {
         const user = new UserData(msg.author, msg.member);

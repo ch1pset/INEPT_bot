@@ -1,9 +1,6 @@
-/node_modules
-/tscompiled
-/test
-/.vscode
-auth.json
-config.json
-links.json
-tags.json
-*.log
+.vscode/
+node_modules/
+tscompiled/
+storage/
+logs/
+tokens.json

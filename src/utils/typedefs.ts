@@ -25,4 +25,5 @@ export type Decorator<T> = (target: T, key: PropertyKey, method?: PropertyDescri
 /**
  * Custom types
  */
+export type Subscription = [string, Callback<void>];
 export type Command = [string, (args: UserArgs.Model, msg: Message) => void];

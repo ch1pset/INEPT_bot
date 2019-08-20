@@ -8,6 +8,6 @@
         "sourceMap": true,
     },
     "include": [
-        "ts_src/**/**/*"
+        "src/**/**/*"
     ]
 }

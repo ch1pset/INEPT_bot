@@ -5,7 +5,7 @@ import { Callback } from '../utils/typedefs';
 import { createQuery } from '../utils/http/rest';
 
 
-@Mixin([AsyncStatus])
+@Mixin(AsyncStatus)
 export class SrGameManager implements AsyncStatus {
     on:     (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     once:   (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;

@@ -4,7 +4,7 @@ import { Mixin } from '../decorators';
 import { AsyncStatus, Status } from '../events';
 import { Logger } from '../../services';
 
-@Mixin([AsyncStatus])
+@Mixin(AsyncStatus)
 export class Dictionary<T> implements AsyncStatus {
     on: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
     once: (event: Status | "ready" | "busy" | "error" | "null", listener: () => void) => this;
@@ -80,8 +80,8 @@ export class Dictionary<T> implements AsyncStatus {
     writeToFile(fname: string, cb: NodeCallback<Error, Dictionary<T>>): void {
         Logger.default.info(`Writing to ${fname}`);
         this.busy();
-        fs.writeFile(
-            fname,
+        let file = fs.createWriteStream(fname);
+        file.write(
             JSON.stringify(this._data, null, 4),
             err => {
                 if(!err) {

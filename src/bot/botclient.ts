@@ -3,16 +3,16 @@ import { UserArgs } from '../discord';
 import { Logger, Responder } from '../services';
 import { Mixin } from '../utils/decorators';
 import { Subscriber } from '../utils/events';
-import { str, Callback } from '../utils/typedefs';
+import { str, Callback, Subscription } from '../utils/typedefs';
 import { ChannelStream } from '../utils/streams';
 
-@Mixin([Subscriber])
+@Mixin(Subscriber)
 export class BotClient extends Client implements Subscriber
 {
-    subscriptions: string[];
+    subscriptions: Subscription[] = [];
     subscribe: (event: str, cb: Callback<any>) => Subscriber;
     subscribeAll: (events: any[][]) => void;
-    unsubscribe: (event: str, cb: Callback<any>) => Subscriber;
+    unsubscribe: (event: str) => Subscriber;
     dispatch: (event: str, ...args: any[]) => boolean;
 
     constructor(token:      str,
@@ -24,7 +24,7 @@ export class BotClient extends Client implements Subscriber
         this.login(token)
             .then(resolved => {
                 this.logger.debug(`Successfully logged in as ${this.user.username}!`);
-                this.dispatch('login');
+                this.emit('login');
             }).catch(rejected => {
                 this.logger.fatal(rejected);
             });

@@ -5,7 +5,7 @@ import { AsyncStatus, Status } from '../utils/events';
 import { HttpsRequest } from './http';
 import { Logger } from './logger';
 
-@Mixin([AsyncStatus])
+@Mixin(AsyncStatus)
 export class Sheet<T> implements AsyncStatus {
     on:     (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;
     once:   (event: Status | "ready" | "busy" | "error" | "null", listener: Callback<void>) => this;

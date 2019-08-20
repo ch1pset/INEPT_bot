@@ -1,6 +1,6 @@
-import { UserArgs } from "../../discord";
+import { UserArgs } from "../discord";
 import { Message } from "discord.js";
-import * as Service from '../../services';
+import * as Service from '../services';
 
 export function Ping(
     msgService: Service.Responder,

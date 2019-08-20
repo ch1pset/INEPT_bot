@@ -1,8 +1,8 @@
-import { UserArgs } from "../../discord";
+import { UserArgs } from "../discord";
 import { Message } from "discord.js";
-import * as Service from '../../services';
-import { Resource } from '../../services/speedrun';
-import { Dictionary } from "../../utils/structures";
+import * as Service from '../services';
+import { Resource } from '../services/speedrun';
+import { Dictionary } from "../utils/structures";
 
 type Category = {name: string, alias: string[]};
 

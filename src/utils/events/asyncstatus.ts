@@ -11,7 +11,7 @@ export enum Status {
     ERROR = 'error',
 }
 
-@Mixin([SimpleEventEmitter])
+@Mixin(SimpleEventEmitter)
 export class AsyncStatus implements SimpleEventEmitter {
     on:     (event:  Status | status_str, listener: Callback<void>) => this;
     once:   (event:  Status | status_str, listener: Callback<void>) => this;

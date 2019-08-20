@@ -2,9 +2,8 @@ import { Mixin } from "../decorators";
 import { Callback } from '../typedefs';
 import { SimpleEventEmitter } from "./simple-events";
 
-@Mixin([SimpleEventEmitter])
+@Mixin(SimpleEventEmitter)
 export class Task implements SimpleEventEmitter {
-    eventNames: () => (string | symbol)[];
     on:     (event: 'done' | 'error', listener: Callback<void>) => this;
     once:   (event: 'done' | 'error', listener: Callback<void>) => this;
     off:    (event: 'done' | 'error', listener: Callback<void>) => this;

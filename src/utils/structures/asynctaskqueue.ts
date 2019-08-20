@@ -2,7 +2,7 @@ import { Callback } from "../typedefs";
 import { AsyncStatus, Status, Task } from "../events";
 import { Mixin } from "../decorators";
 
- @Mixin([AsyncStatus])
+ @Mixin(AsyncStatus)
 export class AsyncTaskQueue implements AsyncStatus {
     status:     Status = Status.NULL;
     ready:      (...args: any[]) => this;
